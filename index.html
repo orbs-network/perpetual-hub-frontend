@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#07050d" />
+    <meta
+      name="description"
+      content="Perpetual Hub decentralized perpetual futures trading."
+    />
+    <meta property="og:title" content="Perpetual Hub" />
+    <meta
+      property="og:description"
+      content="Decentralized perpetual futures trading with USDC collateral."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/logo.svg" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Perpetual Hub" />
+    <meta
+      name="twitter:description"
+      content="Decentralized perpetual futures trading with USDC collateral."
+    />
+    <meta name="twitter:image" content="/logo.svg" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <title>Perpetual Hub</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      if (window.top !== window.self) {
+        document.body.innerHTML = '';
+        window.top.location = window.self.location;
+      }
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

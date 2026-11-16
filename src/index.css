@@ -1,0 +1,226 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer utilities {
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+}
+
+:root {
+  /* --right-col-w: 18.6vw; */
+  /* --book-col-w: 18.6vw; */
+  --chart-offset: 24rem;
+
+  /* shadcn/ui CSS variables */
+  --background: 180 13% 3%;
+  --foreground: 174 18% 86%;
+  --primary: 162 100% 38%;
+  --primary-foreground: 180 13% 3%;
+  --accent: 186 18% 8%;
+  --accent-foreground: 174 18% 86%;
+  --destructive: 354 84% 63%;
+  --destructive-foreground: 174 18% 86%;
+  --border: 188 17% 14%;
+  --input: 184 18% 7%;
+  --ring: 162 100% 38%;
+  --radius: 0.375rem;
+}
+
+html {
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+
+
+
+/* Order book inside right sidebar — hidden by default (shown in its own column) */
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  background: rgb(var(--color-base));
+  color: rgb(var(--color-content));
+  font-family: system-ui, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+  font-size: 13px;
+  line-height: 1.45;
+  letter-spacing: 0;
+  font-feature-settings: "cv02", "cv03", "cv04", "tnum";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#root {
+  min-height: 100vh;
+  overscroll-behavior-x: none;
+}
+
+/* Hide scrollbars globally while keeping scroll functionality */
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+
+.page-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--color-scrollbar)) transparent;
+}
+
+.page-scrollbar::-webkit-scrollbar {
+  display: block;
+  height: 8px;
+  width: 8px;
+}
+
+.page-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-scrollbar));
+  border-radius: 999px;
+}
+
+.page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--color-scrollbar-hover));
+}
+
+/* Checkbox styling */
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: rgb(var(--color-raised));
+  border: 1px solid rgb(var(--color-active));
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+input[type="checkbox"]:hover {
+  border-color: rgb(var(--color-hover));
+}
+
+input[type="checkbox"]:checked {
+  background: rgb(var(--color-long));
+  border-color: transparent;
+}
+
+input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 7px;
+  border: solid white;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
+
+input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(var(--color-long) / 0.2);
+}
+
+/* Focus styles for inputs */
+input:focus, select:focus {
+  outline: none;
+}
+
+.portfolio-chart .recharts-wrapper,
+.portfolio-chart .recharts-wrapper:focus,
+.portfolio-chart .recharts-surface,
+.portfolio-chart .recharts-surface:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.app-toast[data-sonner-toast][data-styled="true"] {
+  width: fit-content !important;
+  max-width: min(420px, calc(100vw - 32px)) !important;
+}
+
+.app-toast[data-sonner-toast][data-styled="true"] [data-content] {
+  min-width: 0;
+}
+
+.app-toast[data-sonner-toast][data-styled="true"] [data-title],
+.app-toast[data-sonner-toast][data-styled="true"] [data-description] {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Table row hover effect */
+tr.hover\:bg-hover\/50:hover {
+  background: rgb(var(--color-hover) / 0.5);
+}
+
+/* Selection colors */
+::selection {
+  background: rgb(var(--color-selection) / 0.25);
+  color: rgb(var(--color-content));
+}
+
+::-moz-selection {
+  background: rgb(var(--color-selection) / 0.25);
+  color: rgb(var(--color-content));
+}
+
+
+@media screen and (max-width: 1000px) {
+  body {
+    background: rgb(var(--color-surface));
+  }
+}

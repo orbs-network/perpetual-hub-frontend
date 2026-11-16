@@ -1,0 +1,30 @@
+.desktop-asset-ticker {
+  container-type: inline-size;
+}
+
+.desktop-asset-ticker-content {
+  display: grid;
+  gap: 16px 40px;
+}
+
+.desktop-asset-ticker-stats {
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  justify-content: start;
+  gap: 16px 40px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+@container (min-width: 600px) {
+  .desktop-asset-ticker-stats {
+    grid-template-columns: repeat(4, max-content);
+  }
+}
+
+@container (min-width: 900px) {
+  .desktop-asset-ticker-content {
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-items: center;
+  }
+}
