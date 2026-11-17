@@ -48,7 +48,7 @@ function stripPairLabel(symbol: string) {
 }
 
 function getReferralUrl() {
-  if (typeof window === "undefined") return `${partner.deployedOrigin}/join/`;
+  if (typeof window === "undefined") return "/join/";
   return `${window.location.origin}/join/`;
 }
 

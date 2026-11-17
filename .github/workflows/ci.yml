@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VITE_PARTNER: global
-      VITE_APP_ORIGIN: https://perps.orbs.network
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

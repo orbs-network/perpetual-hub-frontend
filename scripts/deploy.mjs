@@ -11,7 +11,7 @@ export const DEPLOY_TARGET = Object.freeze({
   projectId: 'prj_RuNXiM0iYR0PRNn47ElA3M46GsLS',
   orgId: 'team_t6YZC010wIUd8yFGN6mkglL9',
 });
-const publicKeys = ['VITE_PARTNER', 'VITE_APP_ORIGIN', 'VITE_WALLETCONNECT_PROJECT_ID'];
+const publicKeys = ['VITE_PARTNER', 'VITE_WALLETCONNECT_PROJECT_ID'];
 const excludedDirectories = new Set([
   '.git', '.vercel', 'node_modules', 'dist', 'dist-ssr', 'coverage',
   '.playwright-cli', 'playwright-report', 'test-results',
@@ -63,8 +63,8 @@ async function applicationEnvironment(root, env, stage) {
     if (value === '[SENSITIVE]') throw new Error(`Set ${key} locally; its pulled Vercel value is redacted.`);
     variables[key] = value?.trim() ?? '';
   }
-  for (const key of ['VITE_PARTNER', 'VITE_APP_ORIGIN']) {
-    if (!variables[key]) throw new Error(`Set ${key} in your shell, a local environment file or Vercel production.`);
+  if (!variables.VITE_PARTNER) {
+    throw new Error('Set VITE_PARTNER in your shell, a local environment file or Vercel production.');
   }
   return variables;
 }

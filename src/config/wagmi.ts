@@ -24,9 +24,7 @@ export const allChains = configuredChains as [Chain, ...Chain[]];
 export function getTransport(chain: Chain) {
   const configuredRpcUrls = RPC_URLS_BY_CHAIN[chain.id];
 
-  // Chains we don't configure RPCs for — currently only reachable when a chain
-  // is registered at runtime, e.g. a LI.FI bridge source chain. Fall back to the
-  // chain definition's own endpoints.
+  // API-provided chains without an RPC override use their catalog endpoints.
   const rpcUrls = configuredRpcUrls?.length
     ? configuredRpcUrls
     : chain.rpcUrls?.default?.http ?? [];
@@ -58,7 +56,7 @@ const UNREACHABLE_RPC_URL = "http://rpc-unavailable.invalid";
  * `createConfig` time.
  *
  * The problem: a plain record is fixed at construction and has no setter, so a
- * chain registered afterwards — e.g. a LI.FI bridge source chain — resolves to
+ * chain outside that initial set resolves to
  * `undefined` and `config.getClient()` throws `TypeError:
  * rest.transports[chainId] is not a function`. RainbowKit resolves a public
  * client during render on every page, so that surfaces as an app-wide render
@@ -110,16 +108,14 @@ export const wallets = isMobile
  * `getDefaultConfig`.
  *
  * `getDefaultConfig` is a thin wrapper that calls `connectorsForWallets` and
- * then `createConfig`, but it does not hand back the connector functions, and
- * the LI.FI bridge needs them to call `syncWagmiConfig`. `connectorsForWallets`
- * supplies the partner name and icon to wallet connection metadata.
+ * then `createConfig`. `connectorsForWallets` supplies the configured partner
+ * name and current-origin icon to wallet connection metadata.
  */
 export const connectors = connectorsForWallets(wallets, {
   appName: partner.name,
-  appIcon: new URL(
-    partner.favicon ?? partner.logoUrl,
-    typeof window !== 'undefined' ? window.location.origin : partner.deployedOrigin,
-  ).href,
+  appIcon: typeof window !== 'undefined'
+    ? new URL(partner.favicon ?? partner.logoUrl, window.location.origin).href
+    : undefined,
   projectId: walletConnectProjectId,
 });
 

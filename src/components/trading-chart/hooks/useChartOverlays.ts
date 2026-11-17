@@ -1,4 +1,4 @@
-import type { Chart } from "klinecharts";
+import type { TradingChartController } from "@/lib/chart/model";
 import {
   useCallback,
   useEffect,
@@ -97,7 +97,7 @@ export function useChartOverlays({
 
   // ── Overlay sync: create once, update in place, reconcile by key ──
   const setupSyncOverlays = useCallback(
-    (chart: Chart) => {
+    (chart: TradingChartController) => {
       const ensureLine = (
         key: string,
         props: {
@@ -114,13 +114,9 @@ export function useChartOverlays({
         },
         active: { overlays: ChartOverlayLabel[] },
       ) => {
-        const pane = chart.getSize("candle_pane", "main");
-        if (!pane || pane.width <= 0 || pane.height <= 0) return;
-        const coordinate = chart.convertToPixel(
-          { value: props.price },
-          { paneId: "candle_pane", absolute: true },
-        );
-        const y = Array.isArray(coordinate) ? coordinate[0]?.y : coordinate.y;
+        const pane = chart.getPlotArea();
+        if (pane.width <= 0 || pane.height <= 0) return;
+        const y = chart.priceToCoordinate(props.price);
         if (
           typeof y !== "number" ||
           !Number.isFinite(y) ||
@@ -132,7 +128,7 @@ export function useChartOverlays({
           Math.max((100 - (props.lineLength ?? 50)) / 100, 0.16),
           0.64,
         );
-        const left = Math.max(
+        const left = pane.left + Math.max(
           8,
           Math.min(pane.width * anchorFraction, pane.width - 420),
         );
@@ -154,10 +150,7 @@ export function useChartOverlays({
           isUpdating: props.isUpdating,
           price: props.price,
           pricePrecision: pricePrecRef.current,
-          right: Math.max(
-            0,
-            (chart.getSize()?.width ?? pane.width) - pane.width - pane.left,
-          ),
+          right: Math.max(0, pane.right),
         });
       };
 

@@ -18,9 +18,9 @@ contract. Preserve the existing default theme until a requested change calls for
 modifying it; this skill does not choose a new design by itself.
 
 `VITE_PARTNER` supplies the backend identity, not a theme selector.
-`VITE_APP_ORIGIN` supplies the application's public HTTP(S) origin.
-`createPartnerConfig(id, appOrigin)` combines those validated environment values
-with the single appearance.
+`createPartnerConfig(id)` combines that validated environment value with the
+single appearance. The frontend origin is taken from the current browser page;
+it is not a build-time input or a partner configuration field.
 Startup chain discovery supplies chains only. A visual change does not require
 changing the ID, chain API, contracts, collateral, API/WS endpoints, WalletConnect
 project ID or signing/account/order logic. Do not restore partner preset registries
@@ -105,11 +105,16 @@ not update what a social crawler reads from static HTML. Use the user's actual
 public asset URL when an absolute social-image URL is needed; do not invent a
 deployment origin or deploy to obtain one.
 
-`deployedOrigin` is derived from required `VITE_APP_ORIGIN`; it is not a field
-to set in the appearance object. It affects the development proxy's upstream
-Origin header and wallet metadata fallback. Change the environment value only
-when deployment-origin changes are actually part of the request. Footer
-policy/support links and infrastructure credit are separate from the app logo.
+Wallet icon URLs and referral links derive their origin from the current browser
+page. Do not add a deployment-origin field to the appearance object or environment.
+The local development proxy removes the browser Origin header from HTTP
+forwarding. Its WebSocket handshake uses the backend's fixed approved Origin,
+`https://perps.orbs.network`; this service header does not configure the frontend
+host. Production uses direct requests with the browser's actual origin.
+Footer policy/support links and infrastructure credit are separate from the app logo.
+Policy URLs may stay blank: footer links are then hidden and terms acceptance
+uses plain text labels. Set real document URLs in `defaultPartner.policyUrls`
+when requested; do not invent policy content or use unrelated legal documents.
 
 ## Verify and hand off
 
@@ -122,8 +127,8 @@ npm run lint
 npm run build
 ```
 
-Supply required `VITE_PARTNER` and `VITE_APP_ORIGIN` through the local build
-environment; the current temporary chain fixture uses `global`. Optional
+Supply required `VITE_PARTNER` through the local build environment; the current
+temporary chain fixture uses `global`. Optional
 `VITE_WALLETCONNECT_PROJECT_ID` is documented in `.env.example`. API/WS URLs remain
 fixed source constants, and Binance market data always uses mainnet without an
 environment selector. Local Vite development always uses the proxy and has no
@@ -139,7 +144,7 @@ Browser-check desktop and mobile: header and navigation drawer proportions,
 normal/hover/focus/disabled controls, dialogs, wallet selection, chart toolbar and
 account overlays, and requested share cards. Check console errors, broken asset
 requests, clipping and overflow. For a light palette, inspect chart labels,
-wallet dialog, footer credit and any enabled bridge separately. Verify QR codes
+wallet dialog and footer credit separately. Verify QR codes
 remain readable if nearby branding changes. Report inaccessible authenticated
 or funded states as coverage gaps rather than fabricating them.
 

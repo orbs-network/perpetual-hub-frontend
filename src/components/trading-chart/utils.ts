@@ -1,4 +1,4 @@
-import type { Chart } from "klinecharts";
+import type { TradingChartController } from "@/lib/chart/model";
 import type { Order } from "@/types";
 import { classifyPendingOrder } from "@/lib/pendingOrderChart";
 import type { ChartOverlayLabel } from "./types";
@@ -54,23 +54,17 @@ export function createOptimisticReplacementOrder(
 }
 
 export function getChartPriceFromClientY(
-  chart: Chart | null | undefined,
+  chart: TradingChartController | null | undefined,
   container: HTMLDivElement | null,
   clientY: number,
 ): number | null {
   if (!chart || !container) return null;
-  const pane = chart.getSize("candle_pane", "main");
-  if (!pane || pane.height <= 0) return null;
+  const pane = chart.getPlotArea();
+  if (pane.height <= 0 || !Number.isFinite(clientY)) return null;
   const y = Math.min(
     Math.max(clientY - container.getBoundingClientRect().top, pane.top),
     pane.top + pane.height,
   );
-  const result = chart.convertFromPixel([{ y }], {
-    paneId: "candle_pane",
-    absolute: true,
-  });
-  const point = Array.isArray(result) ? result[0] : result;
-  return typeof point?.value === "number" && Number.isFinite(point.value)
-    ? point.value
-    : null;
+  const price = chart.coordinateToPrice(y);
+  return typeof price === "number" && Number.isFinite(price) ? price : null;
 }

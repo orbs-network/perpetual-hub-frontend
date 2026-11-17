@@ -95,13 +95,6 @@ export interface ThemeColors {
 }
 
 export interface PartnerFeatureFlags {
-  /**
-   * Enables the LI.FI cross-chain bridge route (`/bridge`) and the "Bridge"
-   * entry point in the deposit modal. Off unless a partner opts in — bridging
-   * only works on chains LI.FI supports. The route gate uses this flag and an
-   * API-provided target lane; the widget verifies provider API support.
-   */
-  bridgeDepositEnabled?: boolean;
   /** Generate referral codes instead of asking the user to choose one. */
   autoGenerateReferralCode?: boolean;
   orderSizeInlineCounterpart?: boolean;
@@ -121,7 +114,6 @@ export interface PartnerMarketPreferences {
 export interface PartnerConfig {
   id: PartnerId;
   name: string;
-  deployedOrigin: string;
   logoUrl: string;
   /** Full brand lockup for headers; logoUrl remains the compact icon. */
   wordmarkUrl?: string;

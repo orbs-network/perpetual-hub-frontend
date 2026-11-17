@@ -9,7 +9,7 @@ The source palette is `defaultPartner.theme` in `src/config/partners/default.ts`
 `applyThemeColors` in `src/config/partners/index.ts` converts ordinary colors to
 space-separated RGB channels (`--color-base: 7 5 13`), which utilities in
 `tailwind.config.js` consume with opacity support. Some non-CSS consumers, such
-as KLineChart, read the original color strings directly.
+as Lightweight Charts, read the original color strings directly.
 
 | Token family | Main effects and consumers |
 | --- | --- |
@@ -71,8 +71,7 @@ by that property: a background can accept a gradient, while a border-color canno
 | `wordmarkUrl` | Full horizontal brand lockup. Header uses it at 24px high/max 112px wide; navigation drawer at 28px high/max 128px. When present, header and position-share card suppress separate brand-name text. Mobile header normally hides fallback name text. |
 | `favicon` | Browser icon through build and runtime code; preferred wallet app icon in `src/config/wagmi.ts`. Supported MIME inference covers `.svg`, `.png`, `.webp`; inspect handling if another format is requested. |
 | `previewImageUrl`, `previewImageType` | Configured OG/Twitter image, large-image card and OG MIME metadata through `vite.config.ts` and runtime `applyTheme`. This is a social card asset, not a replacement for the compact icon. |
-| `docsUrl`, `supportUrl`, `policyUrls` | Footer, referral documentation and terms acceptance links. Update when requested; branding alone does not establish new legal URLs. |
-| `deployedOrigin` | Operational value derived from required `VITE_APP_ORIGIN`, used for the development proxy's upstream Origin header and wallet icon URL fallback outside the browser. Do not hardcode it into the appearance object. |
+| `docsUrl`, `supportUrl`, `policyUrls` | Footer, referral documentation and terms acceptance links. Blank policy URLs hide footer links and render plain labels in terms acceptance. Update when requested; branding alone does not establish new legal URLs. |
 | `index.html` | Initial description, `og:title`/description and Twitter title/description are authored separately from config. The build plugin always writes document title and `theme-color` from the configured name/base, plus configured favicon/image tags. The checked-in initial theme-color also matches the current default base. Check `dist/index.html`, especially after a name change or removal of an old image. |
 | Explorer breadcrumbs | `src/pages/RollupExplorerPage.tsx` and `src/pages/RollupDetailPage.tsx` read `partner.name` for the application breadcrumb label. They follow a configured product rename automatically; preserve the existing navigation links. |
 
@@ -94,28 +93,35 @@ surfaces instead of automatically replacing it with the application brand.
 
 ## Integrations and limits
 
-- **Chart:** `src/components/trading-chart/chartOptions.ts` maps grid, axes,
-  crosshair, tooltips, candle/indicator bars and drawings. `ChartOverlayLayer.tsx`,
-  `tradeMarkers.ts` and `hooks/useKLineChart.ts` cover account/order/fill visuals.
-  `src/components/TradingChart.tsx` subscribes to applied colors. Existing indicator
-  series can retain catalog-specific colors. Preserve order/position interactions
-  while changing appearance.
+- **Chart:** `src/components/trading-chart/chartOptions.ts` maps native grid,
+  axes, crosshair, fonts and local-time labels. `src/lib/chart/engine.ts` styles
+  candle/bar/area series; `indicators.ts` maps study series and pane legends.
+  `drawingTools.ts` maps drawing strokes, fills, selection and anchors.
+  `ChartOverlayLayer.tsx`, `tradeMarkers.ts` and `hooks/useLightweightChart.ts`
+  cover account/order/fill visuals. `src/components/TradingChart.tsx` subscribes
+  to applied colors and renders the required renderer attribution. Preserve
+  order/position interactions and license attribution while changing appearance.
+  `controlStyles.ts` shares the compact trigger and dropdown styles used by
+  `ChartTypeMenu.tsx`, `IndicatorMenu.tsx` and Draw in `ChartToolbar.tsx`.
+  All three use the same surface, foreground, border, hover, accent, focus and
+  shadow tokens. The dropdowns support the fullscreen chart's portal container.
+  `src/stores/chartPreferencesStore.ts` persists chart type, periods, studies and
+  drawing geometry/locks, but no palette or financial data. Restored charts and
+  drawings continue to use the single configured theme.
 - **Wallet dialog:** `src/App.tsx` selects RainbowKit light/dark from `surface`,
   sets its primary accent and inverse text, and adds detailed light-mode surface,
   border and text overrides. Not every dark-mode RainbowKit color is mapped.
   Wallet branding in `src/config/wagmi.ts` uses `name` and `favicon ?? logoUrl`.
+  Relative wallet icon paths resolve against the current browser origin; no
+  deployment-origin setting belongs in the partner appearance or environment.
 - **Toasts:** `src/components/ToastContainer.tsx` selects its light/dark scheme
   from the applied surface and uses app tokens for its classes.
-- **Bridge:** `src/components/bridge/BridgeWidget.tsx` and its loading skeleton
-  explicitly request LI.FI dark appearance. App palette edits do not theme that
-  widget. If the requested work includes an enabled bridge or a light appearance,
-  inspect and address this integration within that scope; do not enable bridging
-  just to theme it.
 - **PNG exports:** `src/components/bottom-tabs/PositionShareModal.tsx` uses
   `wordmarkUrl ?? logoUrl` and `partner.theme.surface`. Points use the compact logo
   in `src/pages/points/PointsPageView.tsx`; `shareImage.ts` also uses the configured
   surface and embeds fonts. These exports read configured values directly, so
   temporary applied-color previews do not guarantee matching export backgrounds.
+  Position-share referral links also use the current browser origin.
 - **Fonts/geometry:** `src/index.css` declares bundled Inter fonts but body uses a
   system font stack. Chart labels default to Inter/Arial in `chartOptions.ts`.
   `--radius` affects mapped Tailwind radii, while explicit radius utilities and
@@ -126,7 +132,7 @@ surfaces instead of automatically replacing it with the application brand.
 - **Intrinsic imagery:** QR white backgrounds and chain/token assets have their
   own colors. Keep QR contrast and actual network/token identification intact.
 - **Feature flags:** `themedOrderButtons`, `pillTradingAccountActions`,
-  `orderSizeInlineCounterpart`, referral-code behavior and bridge enablement are
+  `orderSizeInlineCounterpart` and referral-code behavior are
   configuration options with behavioral/layout effects. `componentClassNames`
   currently allows side-button radius styling. They are not palette tokens;
   do not enable them incidentally during a color or logo edit.

@@ -32,9 +32,11 @@ interface AcceptTermsResult {
 }
 
 function PolicyLink({ href, children }: { href: string; children: string }) {
+  const url = href.trim();
+  if (!url) return <span>{children}</span>;
   return (
     <a
-      href={href}
+      href={url}
       target="_blank"
       rel="noreferrer"
       className="text-content"

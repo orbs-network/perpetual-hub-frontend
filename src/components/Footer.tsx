@@ -9,10 +9,6 @@ function Footer() {
     <footer className="hidden md:flex items-center justify-between bg-base text-[12px] text-content flex-shrink-0 mt-auto pt-8 w-full">
       <div className="flex items-center justify-between w-full border-t border-edge px-4 py-1.5">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5">
-            <span className="inline-block w-2 h-2 rounded-full bg-up" />
-            <span className="text-content">{t("Online")}</span>
-          </div>
           <a
             href="https://www.orbs.com/"
             target="_blank"
@@ -44,18 +40,22 @@ function Footer() {
           >
             {t("Support")}
           </a>
-          <a
-            href={partner.policyUrls.termsOfUse}
-            className="hover:text-content transition-colors"
-          >
-            {t("Terms")}
-          </a>
-          <a
-            href={partner.policyUrls.privacyPolicy}
-            className="hover:text-content transition-colors"
-          >
-            {t("Privacy Policy")}
-          </a>
+          {partner.policyUrls.termsOfUse.trim() ? (
+            <a
+              href={partner.policyUrls.termsOfUse.trim()}
+              className="hover:text-content transition-colors"
+            >
+              {t("Terms")}
+            </a>
+          ) : null}
+          {partner.policyUrls.privacyPolicy.trim() ? (
+            <a
+              href={partner.policyUrls.privacyPolicy.trim()}
+              className="hover:text-content transition-colors"
+            >
+              {t("Privacy Policy")}
+            </a>
+          ) : null}
         </nav>
       </div>
     </footer>

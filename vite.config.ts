@@ -9,20 +9,26 @@ import { resolvePublicEnvironment } from "./src/config/partners/environment";
 import type { PartnerConfig } from "./src/config/partners/types";
 
 /** Development-only proxy for the public backend defined in apiEndpoints.ts. */
-export function createDevProxy(origin: string): Record<string, ProxyOptions> {
+export function createDevProxy(): Record<string, ProxyOptions> {
   const ws = new URL(PUBLIC_WS_URL);
+  const configure: NonNullable<ProxyOptions['configure']> = (server) => {
+    // HTTP forwarding is server-to-server. The public WS service requires its
+    // approved origin even through a local proxy; this is not an app setting.
+    server.on('proxyReq', (request) => request.removeHeader('origin'));
+    server.on('proxyReqWs', (request) => request.setHeader('origin', 'https://perps.orbs.network'));
+  };
   const proxy: Record<string, ProxyOptions> = {
     [DEV_PROXY_WS_PREFIX]: {
       target: ws.origin,
       changeOrigin: true,
-      headers: { Origin: origin },
+      configure,
       ws: true,
       rewrite: path => `${ws.pathname || "/"}${path.slice(DEV_PROXY_WS_PREFIX.length)}`,
     },
     [DEV_PROXY_API_PREFIX]: {
       target: PUBLIC_API_URL,
       changeOrigin: true,
-      headers: { Origin: origin },
+      configure,
       rewrite: path => path.slice(DEV_PROXY_API_PREFIX.length) || "/",
     },
   };
@@ -146,17 +152,16 @@ function partnerHtmlMetadataPlugin(partner: PartnerConfig): PluginOption {
 export default defineConfig(({ mode, command, isPreview }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const environment = resolvePublicEnvironment({ ...env, ...process.env });
-  const selectedPartner = createPartnerConfig(environment.partnerId, environment.appOrigin);
+  const selectedPartner = createPartnerConfig(environment.partnerId);
   return {
     plugins: [react(), partnerHtmlMetadataPlugin(selectedPartner)],
     define: {
       "import.meta.env.VITE_PARTNER": JSON.stringify(environment.partnerId),
-      "import.meta.env.VITE_APP_ORIGIN": JSON.stringify(environment.appOrigin),
       "import.meta.env.VITE_WALLETCONNECT_PROJECT_ID": JSON.stringify(environment.walletConnectProjectId),
     },
     resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
     server: command === "serve" && !isPreview
-      ? { proxy: createDevProxy(selectedPartner.deployedOrigin) }
+      ? { port: 5174, strictPort: true, proxy: createDevProxy() }
       : undefined,
   };
 });

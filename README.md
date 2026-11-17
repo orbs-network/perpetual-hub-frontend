@@ -14,11 +14,16 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Open the local URL printed by Vite. The example selects the `global` backend
+Open `http://localhost:5174/`. The development server uses port 5174 and fails
+instead of moving to another port if that listener is occupied.
+The example selects the `global` backend
 partner with the generic Perpetual Hub appearance and the public production API.
 Local development always proxies API and WebSocket traffic through Vite to the
-public endpoints in `src/config/apiEndpoints.ts`. Production builds and previews
-use those same endpoints directly.
+public endpoints in `src/config/apiEndpoints.ts`, removing the browser Origin
+header from HTTP forwarding. The WebSocket proxy sends the backend's fixed
+approved Origin, `https://perps.orbs.network`, to complete its handshake; this
+service header does not configure the frontend host. Production builds and
+previews use those same endpoints directly with the browser's actual origin.
 Trading actions use the configured backend;
 connecting a wallet and signing requests have their normal live meaning.
 
@@ -28,10 +33,9 @@ This app has one partner and one appearance. Set the required `VITE_PARTNER` in
 `.env.local` (or your hosting build environment) to the backend partner ID. The
 value is used directly for API headers, WebSocket subscriptions, referral scope
 and signing keys; there is no preset registry, alias or fallback identity.
-Set the required `VITE_APP_ORIGIN` to the public frontend origin accepted by the
-backend. The local proxy sends it as its upstream Origin header; wallet metadata
-also uses it as a fallback outside the browser. It does not select the API host.
-Missing or invalid required values fail the build. Changes require a rebuild.
+Missing or invalid partner IDs fail the build. Changes require a rebuild.
+Wallet icon URLs and referral links use the current browser origin; no frontend
+deployment origin is configured at build time.
 
 Keep the existing default theme in `src/config/partners/default.ts` for now.
 The agent can configure its theme tokens there later. `VITE_PARTNER` selects
@@ -65,10 +69,13 @@ Public partner configuration lives in `packages/partner-config/src` (shared
 chain types and temporary response) and `src/config/partners` (the single theme,
 logo, feature flags and initialization). Assets belong in `public/`.
 
+`policyUrls.termsOfUse` and `policyUrls.privacyPolicy` are blank by default.
+Blank values hide footer links and render plain labels in terms acceptance.
+Configure document URLs in `src/config/partners/default.ts` when available.
+
 | Variable | Purpose |
 | --- | --- |
 | `VITE_PARTNER` | Required backend partner ID, used directly; the example and temporary mock use `global`. |
-| `VITE_APP_ORIGIN` | Required public frontend origin, such as `https://perps.orbs.network`; no path, credentials, query or fragment. |
 | `VITE_WALLETCONNECT_PROJECT_ID` | Your own optional WalletConnect project ID for QR/mobile wallet pairing. Injected browser wallets remain available without it. |
 
 These deployment inputs are validated once through
@@ -88,26 +95,41 @@ selects among chains returned for the configured partner.
 
 ## Trading chart
 
-The chart uses Apache-2.0 `klinecharts` 10.1.0 with Binance-first candles and the
-existing backend candle fallback. It retains all 14 intervals, live updates,
-fill markers, PNL/privacy and liquidation lines, pending order badges,
-cancellation, limit-form previews, tick-rounded order/TP/SL repricing and
-rollback after a failed update.
+The chart uses Apache-2.0 `lightweight-charts` 5.3.0 with Binance-first candles
+and the existing backend candle fallback. It retains all 14 intervals, four
+chart types, live updates, native fill markers, PNL/privacy and liquidation
+lines, pending order badges, cancellation, limit-form previews, tick-rounded
+order/TP/SL repricing and rollback after a failed update.
 
-The toolbar uses app-styled timeframe/type dropdowns, indicators and parameters,
-drawing tools with per-symbol restoration and locking, and desktop fullscreen.
-Keyboard users can navigate the dropdowns, close them with Escape and adjust a
-focused order badge by one price increment with Arrow Up/Down. Controls wait
-for the selected symbol/timeframe history before using its scale.
+The toolbar provides a timeframe dropdown and compact chart-type, indicator and
+drawing dropdowns with a shared appearance. The indicator dropdown provides
+search, translated full names and editable parameters for all 27 application
+indicators. The 11 drawing tools support per-symbol restoration and locking.
+Desktop fullscreen is available. Keyboard users can navigate
+the dropdowns, close them with Escape and adjust a focused order badge by one
+price increment with Arrow Up/Down. Controls wait for the selected
+symbol/timeframe history before using its scale. Indicators and drawings use
+application-owned models; previous chart-engine layouts and native formats are
+not imported.
 
-Indicator/drawing choices use KLineChart's catalog; legacy proprietary studies
-and saved layouts are not portable. The dependency's license ships at
-`public/licenses/klinecharts.txt`.
+Timeframe, chart type and indicator parameters are remembered per partner and
+chain. Completed drawings and their locks are saved separately per symbol and
+timeframe, including edits, deletion and clearing. Drafts are not saved. Display
+preferences use validated, bounded browser storage and remain usable in memory
+when storage is unavailable; account, order and position data are not stored
+with chart preferences. Indicator inputs support up to 16 parameters, each no
+greater than 100,000. Live market updates do not save preferences.
+
+The renderer license ships at `public/licenses/lightweight-charts.txt`, with
+its official copyright notice in `public/licenses/lightweight-charts-notice.txt`.
+The chart displays that notice and a [TradingView link](https://www.tradingview.com/).
+The ported indicator calculations retain their Apache-2.0 license and original
+copyright attribution in `public/licenses/indicator-calculations.txt`.
 
 ## Public application boundary
 
-The app includes trading, portfolio/history, rewards/referrals, points,
-optional bridging and the public rollup explorer. Administration screens,
+The app includes trading, portfolio/history, rewards/referrals, points
+and the public rollup explorer. Administration screens,
 operator APIs, internal BI/telemetry, runtime backend/brand selectors, test-wallet
 connectors, private deployment tooling and the proprietary chart bundle are
 excluded. The read-only `/api/v1/admin/config` endpoint remains because the
@@ -126,9 +148,12 @@ npm run lint
 npm run build
 ```
 
-CI runs these checks from this repository alone with the partner ID and public
-app origin from the environment example.
-A read-only RPC reachability check is also available with `npm run smoke:rpc`.
+CI runs these checks from this repository alone with the partner ID from the
+environment example.
+A read-only RPC reachability check is also available with
+`npm run smoke:rpc -- --origin <frontend-origin>`. Its CORS probes require the
+origin of the frontend you want to check. Use `npm run smoke:rpc -- --list` to
+list discovered RPC targets, or `--help` for options, without supplying an origin.
 The repository has no automated test suite or recorded financial regression
 fixtures. Source, type, lint and build checks do not establish financial parity
 with the current backend/TEE.
@@ -172,7 +197,7 @@ Vercel link cannot change that target; pulled project settings are checked too.
 The script checks the public-source boundary before authentication and stages
 the current tracked and nonignored untracked source, including uncommitted
 edits. Real environment files, Git metadata, dependencies and cached builds are
-excluded from staging. Only the three public variables listed above are loaded,
+excluded from staging. Only the two public variables listed above are loaded,
 in this order: shell, `.env.production.local`, `.env.local`, `.env.production`,
 `.env`, then pulled Vercel production values. The first defined value wins; an
 explicitly empty WalletConnect ID disables pairing. A redacted pulled value
