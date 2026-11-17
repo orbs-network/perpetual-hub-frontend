@@ -18,8 +18,8 @@ For theme, colors, logos, wordmarks, favicon or branding metadata work, read
 `.agents/skills/perpetual-hub-theme/SKILL.md` and its relevant appearance reference.
 It explains the single-theme configuration, affected surfaces and verification.
 
-Keep all public partner configuration inside packages/partner-config and
-src/config/partners. API, WebSocket and WalletConnect configuration is build-time
+Keep all public partner configuration inside src/config/partners.
+API, WebSocket and WalletConnect configuration is build-time
 only. Never add admin tools, internal operations, proprietary chart bundles,
 private service telemetry, real environment files or credentials to this repo.
 Do not add mocks to production or browser E2E code; unit-test mocks are allowed.

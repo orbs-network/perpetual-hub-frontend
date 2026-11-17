@@ -1,4 +1,4 @@
-import type { PartnerChainConfig } from './chains.ts';
+import type { PartnerChainConfig } from './types';
 
 /** Local chain registry for the temporary discovery API. Replace with server data. */
 export const registry: {

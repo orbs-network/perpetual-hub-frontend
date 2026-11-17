@@ -1,6 +1,6 @@
 import { isAddress, zeroAddress } from 'viem';
-import type { PartnerChainConfig } from '@perpetual-hub/partner-config';
-import { registry } from '../../packages/partner-config/src/registry';
+import type { PartnerChainConfig } from '@/config/partners/types';
+import { registry } from '@/config/partners/registry';
 import { findChainById } from '@/config/chains';
 
 function isRecord(value: unknown): value is Record<string, unknown> {

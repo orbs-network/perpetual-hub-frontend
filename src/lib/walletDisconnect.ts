@@ -1,4 +1,5 @@
-import { disconnect, watchAccount, type Config } from "@wagmi/core";
+import { disconnect, watchAccount } from "wagmi/actions";
+import type { Config } from "wagmi";
 
 const STORAGE_KEY = "wallet-disconnect";
 const DISCONNECT_TIMEOUT_MS = 3_000;

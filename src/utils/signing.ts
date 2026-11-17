@@ -1,4 +1,4 @@
-import { signTypedData } from '@wagmi/core';
+import { signTypedData } from 'wagmi/actions';
 import { numberToHex, type Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import type { Config } from 'wagmi';
