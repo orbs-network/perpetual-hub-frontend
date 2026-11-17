@@ -167,13 +167,19 @@ explicitly configured isolated backend and funded test wallet.
 ## Build and host
 
 ```sh
+npm ci --include=dev
 npm run build
 npm run preview
 ```
 
+Builds require dev dependencies, including Vite, TypeScript and Tailwind. Keep
+`--include=dev` when installing for a build under `NODE_ENV=production` or an npm
+configuration that omits dev dependencies. Only the generated `dist/` is hosted.
+
 Host `dist/` on a static host with SPA fallback to `index.html`. The checked-in
-`vercel.json` provides that rewrite and the Vite build settings for Vercel. Set
-the public build variables for your own host/project.
+`vercel.json` provides that rewrite, installs build dependencies explicitly and
+sets the Vite build settings for Vercel. Set the public build variables for your
+own host/project.
 
 ## Deploy to Vercel
 
