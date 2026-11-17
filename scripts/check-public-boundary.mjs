@@ -115,12 +115,26 @@ function checkTypeScriptPaths(file, text) {
     report(file, "invalid TypeScript configuration");
     return;
   }
-  const base = path.resolve(path.dirname(path.join(root, file)), config.compilerOptions?.baseUrl ?? ".");
-  for (const [alias, targets] of Object.entries(config.compilerOptions?.paths ?? {})) {
-    if (!alias.startsWith("@perpetual-hub/partner-config") || !Array.isArray(targets)) continue;
+  const baseUrl = config.compilerOptions?.baseUrl ?? ".";
+  if (typeof baseUrl !== "string") {
+    report(file, "invalid TypeScript baseUrl");
+    return;
+  }
+  const base = path.resolve(path.dirname(path.join(root, file)), baseUrl);
+  if (escapesRoot(base)) report(file, "TypeScript baseUrl outside repository");
+  for (const targets of Object.values(config.compilerOptions?.paths ?? {})) {
+    if (!Array.isArray(targets)) {
+      report(file, "invalid TypeScript path mapping");
+      continue;
+    }
     for (const target of targets) {
-      if (typeof target !== "string" || escapesRoot(path.resolve(base, target.replace(/\*.*/, "")))) {
-        report(file, "partner-config alias outside repository");
+      if (typeof target !== "string") {
+        report(file, "invalid TypeScript path mapping");
+      } else if (
+        escapesRoot(path.resolve(base, target.replace(/\*.*/, ""))) ||
+        escapesRoot(path.resolve(base, target.replace(/\*/g, "__alias_segment__")))
+      ) {
+        report(file, "TypeScript alias outside repository");
       }
     }
   }

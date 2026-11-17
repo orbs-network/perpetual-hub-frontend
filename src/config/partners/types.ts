@@ -1,11 +1,17 @@
-import type {
-  PartnerChainConfig,
-  PartnerChainMetadata,
-  PartnerId as SharedPartnerId,
-} from '@perpetual-hub/partner-config';
+/** Backend partner identity supplied by the build environment. */
+export type PartnerId = string;
 
-export type { PartnerChainConfig, PartnerChainMetadata };
-export type PartnerId = SharedPartnerId;
+export interface PartnerChainMetadata {
+  chainId: number;
+  chainName: string;
+  collateralDecimals: 6 | 18;
+  collateralAddress: string;
+  collateralSymbol: string;
+}
+
+export interface PartnerChainConfig extends PartnerChainMetadata {
+  contractAddress: string;
+}
 
 export interface ThemeColors {
   // Backgrounds

@@ -49,7 +49,7 @@ the configuration to UI surfaces and explains asset placement and verification.
 At startup, `src/api/partnerChains.ts` calls the async `fetchPartnerChains(partnerId)`
 boundary. For now it is an explicitly temporary mock API, serving the existing
 `global` Arbitrum lane from the `registry` in
-`packages/partner-config/src/registry.ts`.
+`src/config/partners/registry.ts`.
 Other IDs return an unavailable state rather than borrowing that lane. Replace
 this function's mock transport with the partner-ID API once its endpoint and
 response contract are available. The response is `{ partnerId, chains }`; each
@@ -65,9 +65,10 @@ contract/collateral scope all use the returned chains. `?chain=` selects only
 among those chains; unsupported selections fall back to the first returned
 chain. Account/order validation still belongs to the backend/TEE.
 
-Public partner configuration lives in `packages/partner-config/src` (shared
-chain types and temporary response) and `src/config/partners` (the single theme,
-logo, feature flags and initialization). Assets belong in `public/`.
+Public partner configuration lives in `src/config/partners`: chain types,
+the temporary registry response, the single theme, logo, feature flags and
+initialization. It is part of the app, without a separate local package.
+Assets belong in `public/`.
 
 `policyUrls.termsOfUse` and `policyUrls.privacyPolicy` are blank by default.
 Blank values hide footer links and render plain labels in terms acceptance.

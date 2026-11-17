@@ -26,9 +26,7 @@
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@perpetual-hub/partner-config": ["./packages/partner-config/src/index.ts"],
-      "@perpetual-hub/partner-config/*": ["./packages/partner-config/src/*.ts"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src"]

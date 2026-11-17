@@ -1,6 +1,5 @@
 import { partner } from "@/config/partners";
 import type { PartnerChainConfig, PartnerConfig } from "@/config/partners";
-import { buildPartnerChainKey } from "@perpetual-hub/partner-config";
 import { safeUpperCase } from "@/lib/string";
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -56,7 +55,7 @@ function withPartnerChainKey(
   return {
     ...entry,
     partnerId,
-    partnerChainKey: buildPartnerChainKey(partnerId, entry.chainId),
+    partnerChainKey: `${partnerId}:${entry.chainId}`,
   };
 }
 
