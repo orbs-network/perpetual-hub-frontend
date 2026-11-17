@@ -3,7 +3,6 @@ import { safeUpperCase } from "@/lib/string";
 import { getDisplaySymbol, routeSlugToSymbol } from "@/lib/utils";
 
 export const ROUTE_PATHS = {
-  bridge: "/bridge",
   catchAll: "*",
   explorer: "/explorer",
   explorerRollup: "/explorer/:rollupId",
@@ -39,7 +38,6 @@ export function tradeSymbolForPath(pathname: string) {
 }
 
 export const appRoutes = {
-  bridge: (search = "") => withRouteSearch(ROUTE_PATHS.bridge, search),
   explorer: (search = "") => withRouteSearch(ROUTE_PATHS.explorer, search),
   explorerRollup: (rollupId: string | number, search = "") =>
     withRouteSearch(

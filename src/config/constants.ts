@@ -84,8 +84,6 @@ export type PriceSource = typeof DEFAULT_PRICE_SOURCE;
 // See https://developers.binance.com/docs/derivatives/usds-margined-futures/websocket-market-streams
 export const BINANCE_CONFIG = {
   mainnet: {
-    restUrl: 'https://api.binance.com',
-    wsUrl: 'wss://stream.binance.com:9443/ws',
     futuresRestUrl: 'https://fapi.binance.com',
     futuresMarketWsUrl: 'wss://fstream.binance.com/market/ws',
     futuresPublicWsUrl: 'wss://fstream.binance.com/public/ws',

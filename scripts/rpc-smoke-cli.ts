@@ -11,7 +11,7 @@ import {
 } from "./rpc-smoke-model";
 
 export interface RpcSmokeCLIIO {
-  loadConfig: () => Promise<{ targets: RpcSmokeTarget[]; origin: string }>;
+  loadConfig: () => Promise<{ targets: RpcSmokeTarget[] }>;
   probe: (target: RpcSmokeTarget, options: RpcSmokeOptions) => Promise<RpcSmokeResult>;
   stdout: (text: string) => void;
   stderr: (text: string) => void;
@@ -30,7 +30,7 @@ const usage = `Usage: npm run smoke:rpc -- [options]
 
 Read-only checks of RPCs for the selected partner's API-provided chains.
   --chain <id[,id]>       Limit to chain IDs (repeatable)
-  --origin <origin>       Browser origin (default: selected partner's origin)
+  --origin <origin>       Frontend browser origin (required for RPC/CORS probes)
   --timeout-ms <ms>       Timeout per request, including response body (default: 5000)
   --concurrency <1..8>    Endpoints checked concurrently (default: 2)
   --list                 Print discovered targets without RPC requests
@@ -87,7 +87,7 @@ function parseOptions(args: string[]): Options {
   return options;
 }
 
-export async function loadRpcSmokeConfig(): Promise<{ targets: RpcSmokeTarget[]; origin: string }> {
+export async function loadRpcSmokeConfig(): Promise<{ targets: RpcSmokeTarget[] }> {
   await loadPartnerChains();
   const targets: RpcSmokeTarget[] = [];
   for (const lane of partner.chains) {
@@ -108,7 +108,7 @@ export async function loadRpcSmokeConfig(): Promise<{ targets: RpcSmokeTarget[];
       targets.push({ chainId, chainName: lane.chainName, url, contract });
     }
   }
-  return { targets, origin: partner.deployedOrigin };
+  return { targets };
 }
 
 const defaultIO: RpcSmokeCLIIO = {
@@ -134,8 +134,10 @@ export async function runRpcSmokeCLI(args: string[], io: RpcSmokeCLIIO = default
   if (args.includes("--help")) { io.stdout(usage); return 0; }
   try {
     const options = parseOptions(args);
+    if (!options.list && !options.origin) {
+      throw new Error("--origin is required for RPC/CORS probes; use the frontend's browser origin");
+    }
     const config = await io.loadConfig();
-    const origin = browserOrigin(options.origin ?? config.origin);
     const knownIds = new Set(config.targets.map((target) => target.chainId));
     for (const id of options.chainIds) {
       if (!knownIds.has(id)) throw new Error(`No configured production RPCs for chain ${id}`);
@@ -144,11 +146,12 @@ export async function runRpcSmokeCLI(args: string[], io: RpcSmokeCLIIO = default
     if (!targets.length) throw new Error("No configured production RPCs to check");
     if (options.list) {
       io.stdout(options.json
-        ? `${JSON.stringify({ origin, timeoutMs: options.timeoutMs, targets }, null, 2)}\n`
-        : `Origin: ${origin}\n${targets.map(endpointLabel).join("\n")}\n${targets.length} endpoints; no RPC requests.\n`);
+        ? `${JSON.stringify({ origin: options.origin, timeoutMs: options.timeoutMs, targets }, null, 2)}\n`
+        : `${options.origin ? `Origin: ${options.origin}\n` : ""}${targets.map(endpointLabel).join("\n")}\n${targets.length} endpoints; no RPC requests.\n`);
       return 0;
     }
 
+    const origin = options.origin!;
     if (!options.json) io.stdout(`Checking ${targets.length} RPC endpoints; origin ${origin}; ${options.timeoutMs} ms/request; concurrency ${options.concurrency}.\n`);
     const results = new Array<RpcSmokeResult>(targets.length);
     let next = 0;

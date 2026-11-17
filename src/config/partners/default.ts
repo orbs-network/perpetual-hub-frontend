@@ -1,6 +1,6 @@
 import type { PartnerConfig } from './types';
 
-export const defaultPartner: Omit<PartnerConfig, 'id' | 'deployedOrigin'> = {
+export const defaultPartner: Omit<PartnerConfig, 'id'> = {
   name: 'Perpetual Hub',
   logoUrl: '/logo.svg',
   favicon: '/logo.svg',
@@ -8,8 +8,8 @@ export const defaultPartner: Omit<PartnerConfig, 'id' | 'deployedOrigin'> = {
   docsUrl: 'https://docs.orbs.network/v3/protocols/perpetual-hub',
   supportUrl: 'https://www.orbs.com/contact/',
   policyUrls: {
-    termsOfUse: '/terms',
-    privacyPolicy: '/privacy',
+    termsOfUse: '',
+    privacyPolicy: '',
   },
   theme: {
     // Backgrounds - default dark violet palette
@@ -101,6 +101,6 @@ export const defaultPartner: Omit<PartnerConfig, 'id' | 'deployedOrigin'> = {
 };
 
 /** The backend partner identity is supplied explicitly by the build environment. */
-export function createPartnerConfig(id: string, deployedOrigin: string): PartnerConfig {
-  return { ...defaultPartner, id, deployedOrigin };
+export function createPartnerConfig(id: string): PartnerConfig {
+  return { ...defaultPartner, id };
 }

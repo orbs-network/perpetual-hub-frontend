@@ -1,5 +1,5 @@
-import { useRef, useMemo, useEffect, useState } from "react";
-import type { Chart, Period } from "klinecharts";
+import { useRef, useMemo, useEffect } from "react";
+import type { TradingChartController } from "@/lib/chart/model";
 import type { MarketInfo } from "@/api/markets";
 import type { TradeItem } from "@/types";
 import { useTranslation } from "@/hooks/useSafeTranslation";
@@ -21,9 +21,11 @@ import {
   useChartOverlays,
   useSyncChartOverlays,
 } from "@/components/trading-chart/hooks/useChartOverlays";
-import { useKLineChart } from "@/components/trading-chart/hooks/useKLineChart";
+import { useLightweightChart } from "@/components/trading-chart/hooks/useLightweightChart";
 import { ChartToolbar } from "@/components/trading-chart/ChartToolbar";
 import { useAppliedThemeColors } from "@/hooks/useAppliedThemeColors";
+import { useCurrentPartnerChainKey } from "@/hooks/useCurrentPartnerChain";
+import { DEFAULT_CHART_APPEARANCE, useChartPreferencesStore } from "@/stores/chartPreferencesStore";
 
 const EMPTY_MARKETS: MarketInfo[] = [];
 const EMPTY_TRADES: TradeItem[] = [];
@@ -32,9 +34,11 @@ export function TradingChart() {
   const { i18n, t } = useTranslation();
   const theme = useAppliedThemeColors();
   const containerRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<Chart | null>(null);
+  const chartRef = useRef<TradingChartController | null>(null);
   const fullscreenRef = useRef<HTMLDivElement>(null);
-  const [period, setPeriod] = useState<Period>({ span: 1, type: "hour" });
+  const preferenceScope = useCurrentPartnerChainKey();
+  const preferences = useChartPreferencesStore((state) => state.settings[preferenceScope] ?? DEFAULT_CHART_APPEARANCE);
+  const period = preferences.period;
 
   const { symbol, market: selectedMarket } = useTradeSymbol();
   const priceSource = DEFAULT_PRICE_SOURCE;
@@ -75,10 +79,11 @@ export function TradingChart() {
   const locale = i18n.resolvedLanguage ?? i18n.language;
 
   const { chart, isChartLoading, error, retry, overlayRenderNonce } =
-    useKLineChart({
+    useLightweightChart({
       containerRef,
       chartRef,
       symbol,
+      preferenceScope,
       markets,
       priceSource,
       period,
@@ -89,7 +94,7 @@ export function TradingChart() {
     });
 
   const isChartReady = Boolean(
-    chart && !isChartLoading && chart.getDataList().length > 0,
+    chart && !isChartLoading && chart.getData().length > 0,
   );
 
   const currentMarketPriceRef = useRef(0);
@@ -205,7 +210,9 @@ export function TradingChart() {
         chart={isChartReady ? chart : null}
         symbol={symbol}
         period={period}
-        onPeriodChange={setPeriod}
+        onPeriodChange={(period) => useChartPreferencesStore.getState().updateAppearance(preferenceScope, { period })}
+        chartType={preferences.chartType}
+        onChartTypeChange={(type) => chart?.setChartType(type)}
         containerRef={fullscreenRef}
         isMobile={isMobile}
       />
@@ -239,6 +246,12 @@ export function TradingChart() {
             </button>
           </div>
         ) : null}
+      </div>
+      <div className="shrink-0 border-t border-edge px-2 py-0.5 text-[9px] text-content-muted">
+        <a href="https://www.tradingview.com/" target="_blank" rel="noopener noreferrer"
+          className="rounded hover:text-content-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-focus">
+          TradingView Lightweight Charts™ · Copyright © 2025 TradingView, Inc.
+        </a>
       </div>
     </div>
   );

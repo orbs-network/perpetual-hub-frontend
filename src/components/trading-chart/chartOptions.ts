@@ -1,210 +1,47 @@
-import type { DeepPartial, Locales, Styles } from "klinecharts";
-import { registerLocale } from "klinecharts";
-import type { ThemeColors } from "@/config/partners";
+import { ColorType, CrosshairMode, LineStyle, TickMarkType, type DeepPartial, type ChartOptions, type Time } from 'lightweight-charts';
+import type { ThemeColors } from '@/config/partners';
 
-/** All chart colours come from the active partner, including live theme previews. */
-export function getChartStyles(
-  theme: ThemeColors,
-  fontFamily = "Inter, Arial, sans-serif",
-): DeepPartial<Styles> {
-  const axis = {
-    axisLine: { color: theme.edge },
-    tickLine: { color: theme.edge },
-    tickText: {
-      color: theme["content-secondary"],
-      family: fontFamily,
-      size: 11,
-    },
+export function getChartOptions(theme: ThemeColors, locale: string): DeepPartial<ChartOptions> {
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const date = (time: Time) => new Date(typeof time === 'number' ? time * 1000
+    : typeof time === 'string' ? Date.parse(time) : Date.UTC(time.year, time.month - 1, time.day));
+  const format = (options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(locale, { timeZone, ...options });
+  const labels = {
+    [TickMarkType.Year]: format({ year: 'numeric' }),
+    [TickMarkType.Month]: format({ month: 'short' }),
+    [TickMarkType.DayOfMonth]: format({ day: 'numeric' }),
+    [TickMarkType.Time]: format({ hour: '2-digit', minute: '2-digit', hour12: false }),
+    [TickMarkType.TimeWithSeconds]: format({ hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }),
   };
-  const crosshair = {
-    line: { color: theme["content-muted"] },
-    text: {
-      color: theme.content,
-      backgroundColor: theme.raised,
-      borderColor: theme.edge,
-      family: fontFamily,
-    },
-  };
-
+  const crosshairDate = format({ year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false });
   return {
+    layout: {
+      background: { type: ColorType.Solid, color: theme.surface },
+      textColor: theme['content-secondary'],
+      fontFamily: 'Inter, Arial, sans-serif',
+      fontSize: 11,
+      // The full notice and link are rendered by the app below the chart.
+      attributionLogo: false,
+      panes: { separatorColor: theme.edge, separatorHoverColor: theme.hover, enableResize: true },
+    },
     grid: {
-      horizontal: { color: theme["edge-subtle"] },
-      vertical: { color: theme["edge-subtle"] },
+      vertLines: { color: theme['edge-subtle'], style: LineStyle.Dotted },
+      horzLines: { color: theme['edge-subtle'], style: LineStyle.Dotted },
     },
-    candle: {
-      bar: {
-        upColor: theme.up,
-        downColor: theme.down,
-        noChangeColor: theme["content-muted"],
-        upBorderColor: theme.up,
-        downBorderColor: theme.down,
-        noChangeBorderColor: theme["content-muted"],
-        upWickColor: theme.up,
-        downWickColor: theme.down,
-        noChangeWickColor: theme["content-muted"],
-      },
-      area: {
-        lineColor: theme["accent-primary"],
-        backgroundColor: theme.surface,
-        point: { color: theme["accent-primary"], animation: false },
-      },
-      priceMark: {
-        high: { color: theme["content-secondary"], textFamily: fontFamily },
-        low: { color: theme["content-secondary"], textFamily: fontFamily },
-        last: {
-          upColor: theme.up,
-          downColor: theme.down,
-          noChangeColor: theme["content-muted"],
-          text: { color: theme["content-inverse"], family: fontFamily },
-        },
-      },
-      tooltip: {
-        title: { color: theme.content, family: fontFamily },
-        legend: { color: theme["content-secondary"], family: fontFamily },
-        rect: {
-          color: theme["tooltip-bg"],
-          borderColor: theme.edge,
-        },
-      },
+    crosshair: {
+      mode: CrosshairMode.Normal,
+      vertLine: { color: theme['content-muted'], labelBackgroundColor: theme.raised },
+      horzLine: { color: theme['content-muted'], labelBackgroundColor: theme.raised },
     },
-    indicator: {
-      ohlc: {
-        upColor: theme.up,
-        downColor: theme.down,
-        noChangeColor: theme["content-muted"],
-      },
-      bars: [
-        {
-          upColor: theme.up,
-          downColor: theme.down,
-          noChangeColor: theme["content-muted"],
-        },
-      ],
-      tooltip: {
-        title: { color: theme.content, family: fontFamily },
-        legend: { color: theme["content-secondary"], family: fontFamily },
-      },
+    leftPriceScale: { visible: false },
+    rightPriceScale: { borderColor: theme.edge, minimumWidth: 64, scaleMargins: { top: 0.12, bottom: 0.08 } },
+    timeScale: {
+      borderColor: theme.edge, timeVisible: true, secondsVisible: false, rightOffset: 8, barSpacing: 6,
+      tickMarkFormatter: (time: Time, type: TickMarkType) => labels[type].format(date(time)),
     },
-    xAxis: axis,
-    yAxis: axis,
-    separator: { color: theme.edge, activeBackgroundColor: theme.hover },
-    crosshair: { horizontal: crosshair, vertical: crosshair },
-    overlay: {
-      line: { color: theme["accent-primary"] },
-      rect: {
-        borderColor: theme["accent-primary"],
-        color: /^#[\da-f]{6}$/i.test(theme["accent-primary"])
-          ? `${theme["accent-primary"]}18`
-          : "transparent",
-      },
-      point: {
-        color: theme.surface,
-        borderColor: theme["accent-primary"],
-        activeColor: theme.surface,
-        activeBorderColor: theme["accent-primary"],
-      },
-      text: {
-        color: theme.content,
-        borderColor: theme.edge,
-        backgroundColor: theme.raised,
-        family: fontFamily,
-      },
-    },
+    localization: { locale, timeFormatter: (time: Time) => crosshairDate.format(date(time)) },
+    kineticScroll: { mouse: true, touch: true },
+    handleScroll: { mouseWheel: true, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: false },
+    handleScale: { axisPressedMouseMove: true, mouseWheel: true, pinch: true },
   };
-}
-
-const CHART_LOCALES: Record<string, Locales> = {
-  en: {
-    time: "Time: ",
-    open: "Open: ",
-    high: "High: ",
-    low: "Low: ",
-    close: "Close: ",
-    volume: "Volume: ",
-    change: "Change: ",
-    turnover: "Turnover: ",
-    second: "s",
-    minute: "m",
-    hour: "h",
-    day: "D",
-    week: "W",
-    month: "M",
-    year: "Y",
-  },
-  es: {
-    time: "Hora: ",
-    open: "Apertura: ",
-    high: "Máximo: ",
-    low: "Mínimo: ",
-    close: "Cierre: ",
-    volume: "Volumen: ",
-    change: "Cambio: ",
-    turnover: "Importe: ",
-    second: "s",
-    minute: "m",
-    hour: "h",
-    day: "D",
-    week: "S",
-    month: "M",
-    year: "A",
-  },
-  fr: {
-    time: "Heure : ",
-    open: "Ouverture : ",
-    high: "Haut : ",
-    low: "Bas : ",
-    close: "Clôture : ",
-    volume: "Volume : ",
-    change: "Variation : ",
-    turnover: "Montant : ",
-    second: "s",
-    minute: "min",
-    hour: "h",
-    day: "J",
-    week: "S",
-    month: "M",
-    year: "A",
-  },
-  ja: {
-    time: "時間：",
-    open: "始値：",
-    high: "高値：",
-    low: "安値：",
-    close: "終値：",
-    volume: "出来高：",
-    change: "変動：",
-    turnover: "売買代金：",
-    second: "秒",
-    minute: "分",
-    hour: "時間",
-    day: "日",
-    week: "週",
-    month: "月",
-    year: "年",
-  },
-  zh: {
-    time: "时间：",
-    open: "开：",
-    high: "高：",
-    low: "低：",
-    close: "收：",
-    volume: "成交量：",
-    change: "涨幅：",
-    turnover: "成交额：",
-    second: "秒",
-    minute: "分",
-    hour: "小时",
-    day: "天",
-    week: "周",
-    month: "月",
-    year: "年",
-  },
-};
-
-export function registerChartLocale(language: string): string {
-  const base = language.toLowerCase().replace("_", "-").split("-")[0];
-  const locale = Object.hasOwn(CHART_LOCALES, base) ? base : "en";
-  const name = `perpetual-${locale}`;
-  registerLocale(name, CHART_LOCALES[locale]);
-  return name;
 }

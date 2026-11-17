@@ -1,4 +1,4 @@
-import type { Chart, Period } from "klinecharts";
+import type { ChartPeriod, TradingChartController } from "@/lib/chart/model";
 import {
   useCallback,
   useEffect,
@@ -37,7 +37,7 @@ import {
 
 interface UseChartOrderInteractionsOptions {
   enabled: boolean;
-  period: Period;
+  period: ChartPeriod;
   symbol: string;
   priceSource: PriceSource;
   containerRef: RefObject<HTMLDivElement | null>;
@@ -47,7 +47,7 @@ interface UseChartOrderInteractionsOptions {
   pricePrecision: number;
   t: TFunction;
   userOrders: Order[] | undefined;
-  chartRef: MutableRefObject<Chart | null>;
+  chartRef: MutableRefObject<TradingChartController | null>;
 }
 
 export function useChartOrderInteractions({

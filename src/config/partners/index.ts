@@ -12,10 +12,7 @@ export type {
 
 export const publicEnvironment = resolvePublicEnvironment(import.meta.env);
 
-export const partner: PartnerConfig = createPartnerConfig(
-  publicEnvironment.partnerId,
-  publicEnvironment.appOrigin,
-);
+export const partner: PartnerConfig = createPartnerConfig(publicEnvironment.partnerId);
 
 let appliedThemeColors: ThemeColors = partner.theme;
 const appliedThemeColorListeners = new Set<() => void>();

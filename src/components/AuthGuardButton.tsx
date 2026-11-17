@@ -1,6 +1,5 @@
 import { getCollateralSymbol } from "@/utils/collateralDisplay";
 import { useCallback, useState, type MouseEvent, type ReactNode } from "react";
-import { ArrowLeftRight } from "lucide-react";
 import { Button, type ButtonProps } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { useAuth } from "../hooks/useAuth";
@@ -22,10 +21,6 @@ import { useShouldShowMobileQrRescanPrompt } from "@/hooks/useShouldShowMobileQr
 import { useSwitchToSupportedChain } from "@/hooks/useSwitchToSupportedChain";
 import { useTargetChain } from "@/hooks/useTargetChain";
 import { DepositForm } from "./deposit/DepositForm";
-import { useBridgeEnabled } from "@/hooks/useBridgeEnabled";
-import { useAppQueryParams } from "@/hooks/useAppQueryParams";
-import { useNavigateWithQuery } from "@/hooks/useNavigation";
-import { ROUTE_PATHS } from "@/routes";
 import { useFirstInteractionStore } from "@/stores/firstInteractionStore";
 
 const MOBILE_QR_RESCAN_TEXT = "Enable Trading On Desktop And Scan QR Again";
@@ -192,70 +187,21 @@ function EnableTradingButton({
   );
 }
 
-/**
- * The deposit prompt shown straight after a user enables trading for the first
- * time.
- *
- * Carries the same Bridge entry point as `DepositModal` deliberately: this is the SECOND deposit surface, and it is
- * the one a brand-new user meets — the exact moment they have no balance and
- * most need to bridge. Shipping the button on only one of the two left the
- * feature invisible on the path that needs it most.
- */
+/** The deposit prompt shown after a user first enables trading. */
 function FirstEnableDepositContent({
   onDepositSuccess,
-  onClose,
 }: {
   onDepositSuccess: () => void;
-  onClose: () => void;
 }) {
   const { t } = useTranslation();
   const targetChain = useTargetChain();
-  const bridgeEnabled = useBridgeEnabled();
-  const navigateWithQuery = useNavigateWithQuery();
-  const { sharedSession, viewerAddress } = useAppQueryParams();
-  const { address: walletAddress } = useAccount();
-
-  // Must match what BridgePage will actually accept, or this is a button that
-  // navigates straight back to trade. `DepositModal` gets this for free — it
-  // hides the whole modal in a shared session — but this prompt still renders,
-  // so the condition has to be repeated here.
-  const canDeposit = !sharedSession && !(!walletAddress && viewerAddress);
-
-  // Closes first, then navigates: leaving the modal open behind the bridge page
-  // would strand it over the route the user just moved to.
-  const handleBridgeClick = useCallback(() => {
-    onClose();
-    navigateWithQuery(ROUTE_PATHS.bridge);
-  }, [navigateWithQuery, onClose]);
 
   return (
     <>
       <ResponsiveModalHeader>
-        {bridgeEnabled && canDeposit ? (
-          // Same grid as DepositModal: an absolutely-positioned button would
-          // overlap longer chain names, and symmetric padding squeezed the
-          // title onto three lines on mobile.
-          <div className="grid grid-cols-[1fr_auto] items-center gap-2">
-            <ResponsiveModalTitle className="min-w-0 text-center">
-              {t("Deposit {{collateralSymbol}} from", { collateralSymbol: getCollateralSymbol() })} {targetChain?.name}
-            </ResponsiveModalTitle>
-            <Button
-              type="button"
-              variant="themedSecondary"
-              size="xs"
-              data-testid="deposit-bridge-button"
-              onClick={handleBridgeClick}
-              className="shrink-0 gap-1"
-            >
-              <ArrowLeftRight size={12} />
-              {t("Bridge")}
-            </Button>
-          </div>
-        ) : (
-          <ResponsiveModalTitle className="text-center">
-            {t("Deposit {{collateralSymbol}} from", { collateralSymbol: getCollateralSymbol() })} {targetChain?.name}
-          </ResponsiveModalTitle>
-        )}
+        <ResponsiveModalTitle className="text-center">
+          {t("Deposit {{collateralSymbol}} from", { collateralSymbol: getCollateralSymbol() })} {targetChain?.name}
+        </ResponsiveModalTitle>
         <ResponsiveModalDescription className="sr-only">
           {t("Deposit {{collateralSymbol}} into the trading platform", { collateralSymbol: getCollateralSymbol() })}
         </ResponsiveModalDescription>
@@ -341,7 +287,6 @@ function AuthModal({
         {showDepositAfterEnable ? (
           <FirstEnableDepositContent
             onDepositSuccess={onDepositSuccess}
-            onClose={() => onOpenChange(false)}
           />
         ) : (
           <EstablishConnectionContent

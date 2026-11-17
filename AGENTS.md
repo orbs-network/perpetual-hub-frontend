@@ -9,7 +9,7 @@ codex/ branch unless it is part of the same logical change. Do not add backward
 compatibility unless requested.
 
 Use the existing components, partner tokens and translations. Preserve keyboard
-access, mobile layouts and the KLineChart order/position interactions. Account
+access, mobile layouts and the Lightweight Charts order/position interactions. Account
 and order authority belongs to the backend/TEE; frontend display calculations
 must never replace server validation. Submission prices remain exact 1e18 values
 with explicit source conversions and market tick rounding.

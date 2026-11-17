@@ -50,18 +50,7 @@ const RewardsPage = lazy(() =>
 const PointsPage = lazy(() =>
   import("./pages/PointsPage").then((m) => ({ default: m.PointsPage })),
 );
-// Kept in its own chunk — the LI.FI widget pulls in MUI/emotion and must not
-// land in the initial bundle when bridging is disabled.
-const BridgePage = lazy(() =>
-  import("./pages/BridgePage").then((m) => ({ default: m.BridgePage })),
-);
 import { wagmiConfig } from "./config/wagmi";
-import { installGlobalBatchingCapabilityBlock } from "./config/disableBatchingCapability";
-import {
-  useBridgeWatcher,
-  useHasPendingBridges,
-} from "./components/bridge/useBridgeWatcher";
-import { useRecoverBridges } from "./components/bridge/recoverBridges";
 import { getThemeColorScheme, partner } from "./config/partners";
 import { useAppliedThemeColors } from "./hooks/useAppliedThemeColors";
 import Footer from "./components/Footer";
@@ -152,45 +141,6 @@ const Listeners = () => {
   return null;
 };
 
-/**
- * Installed once, app-wide, on purpose.
- *
- * LI.FI probes `wallet_getCapabilities`, which prompts MetaMask to upgrade the
- * EOA to an EIP-7702 Smart Account. Once enrolled, MM routes every approve
- * through its Delegation7702PublishHook, which fails on chains without 7702 —
- * and that breaks ordinary DEPOSITS, not just bridging, with no dApp-side
- * recovery. So the block cannot live on the bridge route.
- */
-/**
- * App-wide on purpose: a bridge takes minutes, and the user is expected to go
- * back to trading while it completes. Scoped to /bridge this would only work if
- * they sat and watched the page.
- */
-function BridgeWatcher() {
-  // Picks up bridges the widget progressed after /bridge was unmounted — it
-  // keeps executing in the background, so a route can get its source hash long
-  // after our listeners are gone. Has to live out here, above the pending-check
-  // below, or a bridge that was never recorded could never be found.
-  useRecoverBridges();
-
-  // Two components on purpose. The watcher pulls in the deposit hooks, which
-  // mount balance reads that poll every 20s; mounting it unconditionally would
-  // have every session poll the deposit contract forever, including users who
-  // never bridge. The outer half is a store read.
-  return useHasPendingBridges() ? <ActiveBridgeWatcher /> : null;
-}
-
-function ActiveBridgeWatcher() {
-  useBridgeWatcher();
-  return null;
-}
-
-function BatchingCapabilityBlock() {
-  const config = useConfig();
-  useEffect(() => installGlobalBatchingCapabilityBlock(config), [config]);
-  return null;
-}
-
 function WalletConnectionRecovery() {
   const config = useConfig();
   const { logout } = useAuth();
@@ -242,9 +192,7 @@ function App() {
               <QueryParamProvider adapter={ReactRouterQueryParamAdapter}>
                 <AppChainQueryParamNormalizer />
                 <RuntimeSelectionCacheReset />
-                <BatchingCapabilityBlock />
                 <WalletConnectionRecovery />
-                <BridgeWatcher />
                 <Listeners />
                 <TermsAcceptanceModal />
                 <AuthGuard />
@@ -278,7 +226,6 @@ function App() {
                       />
                       <Route path={ROUTE_PATHS.rewards} element={<RewardsPage />} />
                       <Route path={ROUTE_PATHS.points} element={<PointsPage />} />
-                      <Route path={ROUTE_PATHS.bridge} element={<BridgePage />} />
                       <Route
                         path={ROUTE_PATHS.home}
                         element={<RedirectToDefaultTrade />}

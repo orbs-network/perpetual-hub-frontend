@@ -1,8 +1,6 @@
-import type { CandleType, Period } from "klinecharts";
+import type { ChartPeriod, ChartType } from "@/lib/chart/model";
 
-export const USER_DRAWING_GROUP = "user-drawings";
-
-export const CHART_PERIODS: ReadonlyArray<{ label: string; period: Period }> = [
+export const CHART_PERIODS: ReadonlyArray<{ label: string; period: ChartPeriod }> = [
   { label: "1m", period: { span: 1, type: "minute" } },
   { label: "3m", period: { span: 3, type: "minute" } },
   { label: "5m", period: { span: 5, type: "minute" } },
@@ -19,37 +17,28 @@ export const CHART_PERIODS: ReadonlyArray<{ label: string; period: Period }> = [
   { label: "1M", period: { span: 1, type: "month" } },
 ];
 
-export const CHART_TYPES: ReadonlyArray<{ label: string; value: CandleType }> =
+export const CHART_TYPES: ReadonlyArray<{ label: string; value: ChartType }> =
   [
-    { label: "Candles", value: "candle_solid" },
-    { label: "Hollow candles", value: "candle_stroke" },
-    { label: "Bars", value: "ohlc" },
+    { label: "Candles", value: "candles" },
+    { label: "Hollow candles", value: "hollow-candles" },
+    { label: "Bars", value: "bars" },
     { label: "Area", value: "area" },
   ];
 
 export const DRAWING_TOOLS = [
-  { name: "segment", label: "Trend line" },
-  { name: "straightLine", label: "Extended line" },
-  { name: "rayLine", label: "Ray" },
-  { name: "horizontalStraightLine", label: "Horizontal line" },
-  { name: "horizontalRayLine", label: "Horizontal ray" },
-  { name: "verticalStraightLine", label: "Vertical line" },
-  { name: "chartRectangle", label: "Rectangle" },
-  { name: "parallelStraightLine", label: "Parallel channel" },
-  { name: "priceChannelLine", label: "Price channel" },
-  { name: "fibonacciLine", label: "Fibonacci retracement" },
+  { name: "trend-line", label: "Trend line" },
+  { name: "extended-line", label: "Extended line" },
+  { name: "ray", label: "Ray" },
+  { name: "horizontal-line", label: "Horizontal line" },
+  { name: "horizontal-ray", label: "Horizontal ray" },
+  { name: "vertical-line", label: "Vertical line" },
+  { name: "rectangle", label: "Rectangle" },
+  { name: "parallel-channel", label: "Parallel channel" },
+  { name: "price-channel", label: "Price channel" },
+  { name: "fibonacci", label: "Fibonacci retracement" },
   { name: "brush", label: "Brush" },
 ] as const;
 
-export const MAIN_PANE_INDICATORS = new Set([
-  "BBI",
-  "BOLL",
-  "EMA",
-  "MA",
-  "SAR",
-  "SMA",
-]);
-
-export function periodKey(period: Period) {
+export function periodKey(period: ChartPeriod) {
   return `${period.span}:${period.type}`;
 }

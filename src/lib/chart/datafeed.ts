@@ -1,15 +1,37 @@
-import type {
-  DataLoader,
-  DataLoaderGetBarsParams,
-  DataLoaderSubscribeBarParams,
-  KLineData,
-  Period,
-  SymbolInfo,
-} from "klinecharts";
+import type { ChartCandle, ChartPeriod } from "./model";
 import { BINANCE_CONFIG, type PriceSource } from "@/config/constants";
 import type { MarketInfo } from "@/api/markets";
 import { fetchHedgerKlines, type HedgerKline } from "@/api/marketData";
 import { binanceWs } from "@/lib/binance/wsClient";
+
+/** Market metadata consumed by the application chart, with no engine types. */
+export interface ChartSymbolInfo {
+  ticker: string;
+}
+
+export interface ChartDataLoaderGetBarsParams {
+  /** forward loads candles older than timestamp; init loads the latest history. */
+  type: "init" | "forward";
+  timestamp: number | null;
+  symbol: ChartSymbolInfo;
+  period: ChartPeriod;
+  callback: (
+    bars: ChartCandle[],
+    more: boolean,
+  ) => void;
+}
+
+export interface ChartDataLoaderSubscribeBarParams {
+  symbol: ChartSymbolInfo;
+  period: ChartPeriod;
+  callback: (bar: ChartCandle) => void;
+}
+
+export interface ChartDataLoader {
+  getBars: (params: ChartDataLoaderGetBarsParams) => void | Promise<void>;
+  subscribeBar: (params: ChartDataLoaderSubscribeBarParams) => void;
+  unsubscribeBar: (params: { symbol: ChartSymbolInfo; period: ChartPeriod }) => void;
+}
 
 const HISTORY_LIMIT = 1500;
 const WS_FALLBACK_TIMEOUT_MS = 2500;
@@ -32,8 +54,8 @@ const SUPPORTED_INTERVALS = new Set([
   "1M",
 ]);
 
-/** KLine periods are explicit units; month and minute must stay distinct. */
-export function periodToBinanceInterval(period: Period): string | null {
+/** Candle periods use explicit units; month and minute must stay distinct. */
+export function periodToBinanceInterval(period: ChartPeriod): string | null {
   const suffix = {
     minute: "m",
     hour: "h",
@@ -57,7 +79,7 @@ type BinanceKline = [
   ...unknown[],
 ];
 
-function validBar(bar: KLineData): boolean {
+function validBar(bar: ChartCandle): boolean {
   return (
     Number.isSafeInteger(bar.timestamp) &&
     bar.timestamp >= 0 &&
@@ -69,7 +91,13 @@ function validBar(bar: KLineData): boolean {
   );
 }
 
-function binanceBar(row: BinanceKline): KLineData {
+function binanceBar(row: BinanceKline): ChartCandle {
+  const rawTurnover = row[7];
+  const turnover =
+    typeof rawTurnover === "number" ||
+    (typeof rawTurnover === "string" && rawTurnover.trim() !== "")
+      ? Number(rawTurnover)
+      : NaN;
   return {
     timestamp: Number(row[0]),
     open: Number(row[1]),
@@ -77,10 +105,11 @@ function binanceBar(row: BinanceKline): KLineData {
     low: Number(row[3]),
     close: Number(row[4]),
     volume: Number(row[5]),
+    ...(Number.isFinite(turnover) && turnover >= 0 ? { turnover } : {}),
   };
 }
 
-function hedgerBar(row: HedgerKline): KLineData {
+function hedgerBar(row: HedgerKline): ChartCandle {
   return {
     timestamp: row.openTime,
     open: Number(row.open),
@@ -91,8 +120,8 @@ function hedgerBar(row: HedgerKline): KLineData {
   };
 }
 
-function normalizeBars(bars: KLineData[], before?: number): KLineData[] {
-  const unique = new Map<number, KLineData>();
+function normalizeBars(bars: ChartCandle[], before?: number): ChartCandle[] {
+  const unique = new Map<number, ChartCandle>();
   for (const bar of bars) {
     if (validBar(bar) && (before === undefined || bar.timestamp < before)) {
       unique.set(bar.timestamp, bar);
@@ -101,7 +130,7 @@ function normalizeBars(bars: KLineData[], before?: number): KLineData[] {
   return [...unique.values()].sort((a, b) => a.timestamp - b.timestamp);
 }
 
-function sessionKey(symbol: SymbolInfo, period: Period): string {
+function sessionKey(symbol: ChartSymbolInfo, period: ChartPeriod): string {
   return `${symbol.ticker}:${period.type}:${period.span}`;
 }
 
@@ -110,7 +139,7 @@ function errorMessage(error: unknown): string {
 }
 
 /**
- * Market data only. KLineChart owns rendering; backend prices and order handling
+ * Market data only. Rendering is separate; backend prices and order handling
  * continue using their existing exact-price APIs independently of this adapter.
  */
 export class MarketChartDatafeed {
@@ -139,21 +168,16 @@ export class MarketChartDatafeed {
     this.markets = markets;
   }
 
-  resolveSymbol(ticker: string): SymbolInfo | null {
+  resolveSymbol(ticker: string): ChartSymbolInfo | null {
     const market = this.markets.find(
       (candidate) => candidate.symbol === ticker,
     );
     return market
-      ? {
-          ticker: market.symbol,
-          name: market.displayName,
-          pricePrecision: market.pricePrecision,
-          volumePrecision: market.quantityPrecision,
-        }
+      ? { ticker: market.symbol }
       : null;
   }
 
-  createDataLoader(): DataLoader {
+  createDataLoader(): ChartDataLoader {
     return {
       getBars: (params) => this.getBars(params),
       subscribeBar: (params) => this.subscribe(params),
@@ -215,7 +239,7 @@ export class MarketChartDatafeed {
     symbol,
     period,
     callback,
-  }: DataLoaderGetBarsParams): Promise<void> {
+  }: ChartDataLoaderGetBarsParams): Promise<void> {
     if (this.destroyed) return;
     const key = sessionKey(symbol, period);
     // Ignore late pagination requests for a chart which has since changed.
@@ -225,12 +249,6 @@ export class MarketChartDatafeed {
     const interval = periodToBinanceInterval(period);
     if (!interval) {
       this.reportError("history", "Unsupported chart interval");
-      callback([], false);
-      return;
-    }
-    // KLineChart calls left-edge history "forward" and right-edge "backward".
-    // Newer bars are supplied by subscribeBar, so no right-edge pagination.
-    if (type === "backward" || type === "update") {
       callback([], false);
       return;
     }
@@ -255,9 +273,9 @@ export class MarketChartDatafeed {
     for (const [name, value] of Object.entries(params))
       url.searchParams.set(name, String(value));
 
-    let bars: KLineData[];
+    let bars: ChartCandle[];
     try {
-      let rawBars: KLineData[];
+      let rawBars: ChartCandle[];
       try {
         const response = await fetch(url.toString(), {
           signal: controller.signal,
@@ -289,14 +307,14 @@ export class MarketChartDatafeed {
     // never retry a chart callback with empty history if rendering throws.
     if (!this.isCurrent(key, generation)) return;
     this.reportError("history", null);
-    callback(bars, { forward: bars.length > 0, backward: false });
+    callback(bars, bars.length > 0);
   }
 
   private subscribe({
     symbol,
     period,
     callback,
-  }: DataLoaderSubscribeBarParams): void {
+  }: ChartDataLoaderSubscribeBarParams): void {
     if (this.destroyed) return;
     const key = sessionKey(symbol, period);
     if (this.activeKey !== null && this.activeKey !== key) return;
@@ -315,7 +333,7 @@ export class MarketChartDatafeed {
     let pollTimer: ReturnType<typeof setInterval> | undefined;
     let pollRequest: AbortController | null = null;
     const current = () => !stopped && this.isCurrent(key, generation);
-    const emit = (bar: KLineData) => {
+    const emit = (bar: ChartCandle) => {
       if (!current() || !validBar(bar) || bar.timestamp < lastTimestamp) return;
       lastTimestamp = bar.timestamp;
       this.reportError("live", null);
@@ -393,11 +411,13 @@ export class MarketChartDatafeed {
               l: string;
               c: string;
               v: string;
+              q?: string;
             };
           };
           if (message?.e !== "kline" || !message.k) return;
-          const { t, o, h, l, c, v } = message.k;
-          emit(binanceBar([t, o, h, l, c, v]));
+          const { t, o, h, l, c, v, q } = message.k;
+          // Quote-volume is the actual candle turnover, not close × volume.
+          emit(binanceBar([t, o, h, l, c, v, undefined, q]));
         },
       });
     } catch {
