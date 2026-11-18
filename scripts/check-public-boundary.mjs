@@ -3,7 +3,7 @@
 // Inspect the files Git would publish, including new untracked source. Ignored
 // local environments, dependencies and build output are intentionally excluded.
 import { execFileSync } from "node:child_process";
-import { existsSync, lstatSync, readFileSync, readlinkSync, realpathSync } from "node:fs";
+import { lstatSync, readFileSync, readlinkSync, realpathSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -158,13 +158,10 @@ for (const file of files) {
   }
   const parts = file.split("/");
   const basename = parts.at(-1);
-  // The only public Claude entry is an in-repo alias to the canonical skill.
-  // Settings, sessions and every other .claude path remain private.
-  const publicSkillAlias = file === ".claude/skills/partner-launch";
   if ((basename === ".env" || basename.startsWith(".env.")) && basename !== ".env.example") {
     report(file, "actual environment file");
   }
-  if (parts.some((part) => privateDirectories.has(part.toLowerCase()) && !(publicSkillAlias && part === ".claude")) || serviceRoots.has(parts[0].toLowerCase()) || /^(?:ProprietaryChart|PerpsAnalyticsPage)(?:\.test)?\.tsx$/i.test(basename)) {
+  if (parts.some((part) => privateDirectories.has(part.toLowerCase())) || serviceRoots.has(parts[0].toLowerCase()) || /^(?:ProprietaryChart|PerpsAnalyticsPage)(?:\.test)?\.tsx$/i.test(basename)) {
     report(file, "private service, operations or proprietary chart path");
   }
   if (parts.some((part) => part.toLowerCase() === ".git")) continue;
@@ -177,9 +174,6 @@ for (const file of files) {
   } catch (error) {
     if (error.code !== "ENOENT") report(file, "unreadable included file");
     continue;
-  }
-  if (publicSkillAlias && (!stat.isSymbolicLink() || readlinkSync(absolute) !== "../../.agents/skills/partner-launch" || !existsSync(path.join(absolute, "SKILL.md")))) {
-    report(file, "invalid public Claude skill alias");
   }
   if (stat.isSymbolicLink()) {
     const target = path.resolve(path.dirname(absolute), readlinkSync(absolute));
