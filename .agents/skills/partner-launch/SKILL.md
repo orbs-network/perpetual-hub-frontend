@@ -31,10 +31,7 @@ switch branches, and do not ask the partner about Git branches; the `AGENTS.md`
 `codex/` branch rule applies to upstream contributors, not partner launches.
 Make routine technical choices yourself and explain them afterwards in plain words.
 
-Explain permission/browser popups in plain words. Confirm the UI name/colors
-and use the logo file dragged into chat or its supplied local path. Copy agreed
-assets into `public/`; offer text-only branding when there is no logo. Portal
-defaults are not confirmed branding. Keep identity separate from appearance.
+Explain permission/browser popups in plain words.
 
 ## Tools and public configuration
 
@@ -68,6 +65,25 @@ API/WS endpoints currently come from source, not extra invented env variables.
 Keep passwords, tokens, keys, seed phrases and onboarding signatures/proofs out
 of chat, code, commits, build output, notes and backups. Real environment files
 and provider login state stay local and ignored.
+
+## Brand the app
+
+Finish branding before the first draft build, so the partner's first preview
+already looks like their site. Follow the
+[`perpetual-hub-theme` skill](../perpetual-hub-theme/SKILL.md) for every
+appearance change; this skill decides only when branding happens.
+
+1. Confirm the UI name and colors, and use the logo file dragged into chat or its
+   supplied local path. Offer text-only branding with the default palette when
+   there is no logo or no colors. Portal defaults are not confirmed branding.
+2. Copy agreed assets into `public/` and apply the name, colors, logo, favicon and
+   metadata through the theme skill. Keep identity (`VITE_PARTNER`) separate from
+   appearance.
+3. Check the branded app locally on desktop and mobile before publishing.
+4. Record the choices and original/copied asset paths in `DEPLOYMENT.md`.
+
+Later restyles use the theme skill on its own, then rerun the checks and
+redeploy to the same recorded site; they do not need a full launch.
 
 ## Check and publish
 
