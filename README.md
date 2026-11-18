@@ -46,6 +46,16 @@ Agents changing colors, logos, fonts or branding metadata should use
 [$perpetual-hub-theme](.agents/skills/perpetual-hub-theme/SKILL.md). The skill maps
 the configuration to UI surfaces and explains asset placement and verification.
 
+For a partner-owned website launch or update, use
+[$partner-launch](.agents/skills/partner-launch/SKILL.md). It maintains the build,
+hosting, current-pricing checks, live verification, private `DEPLOYMENT.md` record
+and separate trading-activation handoff alongside this code. Read `AGENTS.md`
+explicitly after cloning. `CLAUDE.md` imports it, and `.claude/skills/partner-launch`
+links to the same skill for Claude Code; there is only one procedure to maintain.
+Changes to build scripts, Node requirements, env settings, discovery or hosting
+must update the skill in the same change. A launch prompt carries partner data
+and pre-clone safeguards rather than another copy of these steps.
+
 At startup, `src/api/partnerChains.ts` calls the async `fetchPartnerChains(partnerId)`
 boundary. For now it is an explicitly temporary mock API, serving the existing
 `global` Arbitrum lane from the `registry` in

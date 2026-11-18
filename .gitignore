@@ -2,6 +2,8 @@ node_modules/
 dist/
 dist-ssr/
 .vercel/
+.netlify/
+/DEPLOYMENT.md
 .playwright-cli/
 playwright-report/
 test-results/
@@ -15,4 +17,7 @@ coverage/
 .DS_Store
 .vscode/
 .idea/
-.claude/
+.claude/*
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/partner-launch
