@@ -5,8 +5,9 @@ there is no required sibling backend, TEE, contracts or private monorepo checkou
 
 Read docs/changelog.md before changing code. Preserve documented behavior and
 record completed changes plus their test gaps there. Keep each task on its own
-codex/ branch unless it is part of the same logical change. Do not add backward
-compatibility unless requested.
+codex/ branch unless it is part of the same logical change. This branch rule is
+for upstream contributors; partner launches follow the partner-launch skill and
+stay on the checked-out branch. Do not add backward compatibility unless requested.
 
 Use the existing components, partner tokens and translations. Preserve keyboard
 access, mobile layouts and the Lightweight Charts order/position interactions. Account

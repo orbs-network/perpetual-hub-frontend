@@ -26,6 +26,11 @@ the disk, reset, reinitialize Git or work in a temporary chat folder. For update
 read `DEPLOYMENT.md` first; if the customized folder is missing, ask for its
 backup/notes rather than silently starting a new app or hosting site.
 
+Stay on the branch already checked out in the permanent folder. Do not create or
+switch branches, and do not ask the partner about Git branches; the `AGENTS.md`
+`codex/` branch rule applies to upstream contributors, not partner launches.
+Make routine technical choices yourself and explain them afterwards in plain words.
+
 Explain permission/browser popups in plain words. Confirm the UI name/colors
 and use the logo file dragged into chat or its supplied local path. Copy agreed
 assets into `public/`; offer text-only branding when there is no logo. Portal
