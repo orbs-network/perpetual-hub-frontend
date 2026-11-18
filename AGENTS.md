@@ -18,6 +18,11 @@ For theme, colors, logos, wordmarks, favicon or branding metadata work, read
 `.agents/skills/perpetual-hub-theme/SKILL.md` and its relevant appearance reference.
 It explains the single-theme configuration, affected surfaces and verification.
 
+For partner launch or updates, read `.agents/skills/partner-launch/SKILL.md`.
+It owns the install/check, hosting, live verification and activation handoff
+procedure. When build scripts, Node requirements, public env settings, discovery
+or hosting behavior change, review and update that skill in the same change.
+
 Keep all public partner configuration inside src/config/partners.
 API, WebSocket and WalletConnect configuration is build-time
 only. Never add admin tools, internal operations, proprietary chart bundles,
