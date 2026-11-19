@@ -12,7 +12,9 @@ If the current workspace is a different app, do not transplant these instruction
 ## Configuration model
 
 The app has **one checked-in appearance** in `src/config/partners/default.ts`.
-Edit `defaultPartner.theme` for colors and the surrounding fields for branding.
+Set `defaultPartner.theme` for colors, normally with `createTheme` from a few
+seed colors (below), and the surrounding fields for branding. The checked-in
+default is still a literal palette.
 `ThemeColors` and `PartnerConfig` in `src/config/partners/types.ts` define the
 contract. Preserve the existing default theme until a requested change calls for
 modifying it; this skill does not choose a new design by itself.
@@ -30,13 +32,79 @@ Read [references/appearance-map.md](references/appearance-map.md) for the token
 effects, exact asset consumers, third-party limits and metadata exceptions relevant
 to the requested change. Use the source as authority if it has evolved.
 
-## Change a palette
+## Create a palette from a few colors
+
+Use this for any new brand palette. Do not hand-pick the ~60 tokens.
+`createTheme(seeds, overrides?)` in `src/config/partners/themeFromSeeds.ts` builds
+every token from a few seed colors (six-digit hex). It covers the surface
+levels, borders, text, button and toggle states, links, focus, overlay and
+shadows. It also keeps text, links, profit/loss and toggle text readable.
+
+| Seed | Required | Ask the user |
+| --- | --- | --- |
+| `background` | yes | Dark or light page? A specific background color? Its lightness picks a dark or light palette. |
+| `accent` | yes | The brand color for buttons and highlights. Offer one taken from the supplied logo. |
+| `long`, `short` | no | Keep the default green/red unless the user asks. Buy/sell and profit/loss must stay clearly distinct. |
+| `warning` | no | Rarely needed; defaults to amber. |
+
+1. Ask the user only for what the table marks. Never ask for individual tokens.
+   Ask first for exact brand hex values from their brand guide, if they have one.
+   Otherwise read the logo's main colors and suggest an accent and a matching
+   dark or light background; colors read from an image are approximate, so say
+   so and let the user confirm or correct them.
+2. Generate two or three options when the choice is open, for example the same
+   accent on dark and on light, or two accents from the logo. Print each one with
+   its contrast report:
+
+   ```sh
+   npx vite-node scripts/theme-from-seeds.ts -- --background '#0b0f14' --accent '#f0b90b'
+   ```
+
+   Lines marked `LOW` are required pairs below the minimum. Pick another seed
+   or override that token. `note` lines are advisory; the default palette has
+   them too (white text on the green/amber fills).
+3. Let the user try each option in the real app. Start the dev server
+   (`npm run dev`) and give one preview link per option, without editing files:
+
+   ```text
+   http://localhost:5173/?themeBg=0b0f14&themeAccent=f0b90b
+   http://localhost:5173/?themeBg=f6f7f9&themeAccent=f0b90b
+   ```
+
+   Optional parameters: `themeLong`, `themeShort`, `themeWarning`. The `#` may be
+   left out. Use the port the dev server reports. The choice stays for that
+   browser tab across navigation and reloads; `?themePreview=reset` returns to
+   the configured theme. Ask the user to click through trading, portfolio and the
+   wallet dialog, on a phone-sized window too, and reply with the option they
+   want. Add a screenshot of each when the user cannot open local links. Preview
+   links work only in the dev server (`src/config/partners/themePreview.ts`,
+   gated by `import.meta.env.DEV`); production builds ignore them. A preview does
+   not change PNG share exports, which read the configured theme. An invalid
+   color is ignored with a console warning.
+4. Apply the chosen option by replacing the `theme` object in `default.ts` with
+   `theme: createTheme({ background: '…', accent: '…' })`, importing `createTheme`.
+   Put any hand-tuned token in the second argument, e.g.
+   `createTheme(seeds, { 'logo-color': '#ffffff' })`, rather than editing the
+   generator. Record the seeds in `DEPLOYMENT.md` for a partner launch.
+5. Check it as in "Verify and hand off". For light palettes also check the chart
+   labels, the RainbowKit wallet dialog and the footer credit. The full-screen
+   WalletConnect "All Wallets" sheet keeps its own dark styling.
+
+Change the generator itself only for a defect that affects every palette. That
+is an app change: record it in `docs/changelog.md`, and re-check the default
+seeds (`#07050d` / `#6675f7`), which reproduce the current palette within a few
+RGB steps.
+
+## Fine-tune individual tokens
+
+Use this to adjust a few tokens, or when the user explicitly wants a hand-made palette.
 
 1. Identify the requested surfaces and states before editing. For example,
    primary action color affects normal, themed, hover, border, disabled and
    foreground tokens; it is not a single universal accent field.
-2. Edit the complete existing `theme` object in `default.ts`. Keep all required
-   keys. Prefer existing semantic tokens in components instead of adding literal
+2. With a generated theme, pass the change as an override to `createTheme`. With
+   a literal theme, edit the complete `theme` object in `default.ts` and keep all
+   required keys. Prefer existing semantic tokens in components instead of adding literal
    colors or new one-off flags. Search consumers with `rg` when a token's effect
    is unclear.
 3. Use **six-digit hex** (`#6675f7`) for ordinary color tokens. The CSS converter
