@@ -106,6 +106,10 @@ export default {
         'content-secondary': c('content-secondary'),
         'content-muted': c('content-muted'),
         'content-inverse': c('content-inverse'),
+        'content-on-up': c('content-on-up'),
+        'content-on-down': c('content-on-down'),
+        'content-on-warning': c('content-on-warning'),
+        'content-on-long': c('content-on-long'),
       },
       boxShadow: {
         'glow-up': '0 0 10px rgb(var(--color-up) / 0.15)',

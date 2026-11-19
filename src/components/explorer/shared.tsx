@@ -47,7 +47,7 @@ export function TypeBadge({ type }: { type: string }) {
   } else if (upper.includes("CLOSE")) {
     colorClasses = "bg-accent-tertiary/20 text-accent-tertiary";
   } else if (upper.includes("FILL")) {
-    colorClasses = "bg-long/20 text-long";
+    colorClasses = "bg-up/20 text-up";
   } else if (upper.includes("CANCEL")) {
     colorClasses = "bg-content-muted/20 text-content-muted";
   } else if (upper.includes("LEVERAGE")) {

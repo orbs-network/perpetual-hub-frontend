@@ -91,6 +91,10 @@ export const defaultPartner: Omit<PartnerConfig, 'id'> = {
     'content-secondary': '#918b9d',
     'content-muted': 'rgba(245, 243, 248, 0.38)',
     'content-inverse': '#ffffff',
+    'content-on-up': '#ffffff',
+    'content-on-down': '#ffffff',
+    'content-on-warning': '#ffffff',
+    'content-on-long': '#ffffff',
 
     // Shadows
     'shadow-card':

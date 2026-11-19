@@ -177,6 +177,7 @@ const TradeHeader = ({ children }: { children?: React.ReactNode }) => {
 
 /* ── Trade screen (order form + optional book) ── */
 function TradeFormScreen() {
+  const { t } = useTranslation();
   const [showBook, setShowBook] = useState(false);
   const orderFormRef = useRef<HTMLDivElement>(null);
   const [orderFormHeight, setOrderFormHeight] = useState<number | null>(null);
@@ -211,7 +212,7 @@ function TradeFormScreen() {
     <>
       <Surface>
         <TradeHeader>
-          <Switch checked={showBook} onCheckedChange={setShowBook} />
+          <Switch aria-label={t("Order Book")} checked={showBook} onCheckedChange={setShowBook} />
         </TradeHeader>
       </Surface>
       <MobileSectionSeparator />

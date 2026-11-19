@@ -30,13 +30,13 @@ console.log(`createTheme(${JSON.stringify(seeds)})\n`);
 console.log(JSON.stringify(theme, null, 2));
 console.log("\nContrast checks:");
 for (const check of checks) {
-  const mark = check.passes ? "ok  " : check.advisory ? "note" : "LOW ";
+  const mark = check.passes ? "ok  " : "LOW ";
   console.log(`${mark} ${check.pair.padEnd(48)} ${check.ratio.toFixed(2)} (min ${check.minimum})`);
 }
-const failing = checks.filter((check) => !check.passes && !check.advisory).length;
+const failing = checks.filter((check) => !check.passes).length;
 console.log(
   failing === 0
-    ? "\nAll required contrast checks pass. Notes are advisory (the default palette has them too)."
+    ? "\nAll required contrast checks pass."
     : `\n${failing} required contrast check(s) below minimum.`,
 );
 process.exitCode = failing === 0 ? 0 : 1;

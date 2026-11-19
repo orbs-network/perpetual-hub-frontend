@@ -1,188 +1,104 @@
 ---
 name: perpetual-hub-theme
-description: Configure the single Perpetual Hub frontend theme and branding, including colors, button states, chart styling, logos, wordmarks, favicon and social preview metadata. Use for appearance changes or explaining their impact in the perpetual-hub-frontend repository.
+description: Generate and preview a complete Perpetual Hub palette from a primary brand color and dark/light preference, or update its logos and branding. Use for appearance changes in the perpetual-hub-frontend repository.
 ---
 
 # Perpetual Hub theme and branding
 
-Apply this skill from the Perpetual Hub frontend repository root. Read its
-`AGENTS.md` and `docs/changelog.md` first. Paths below are relative to that root.
-If the current workspace is a different app, do not transplant these instructions.
+Work from this repository root. Read `AGENTS.md` and `docs/changelog.md` first.
+Use the existing application, components, translations and shared theme path.
+For a partner launch, the adjacent
+[`partner-launch` skill](../partner-launch/SKILL.md) owns onboarding, hosting and
+activation; this skill owns palette generation, branding and visual review.
+When called during a launch, reuse its branding intake, accepted choices and
+finalization delegation; do not start another questionnaire or approval round.
 
-## Configuration model
+## Start with the partner's choices
+
+Reuse choices, assets and delegation already supplied. For a new brand, ask
+together for missing choices the partner has not delegated: app name, logo file
+or local path (text-only is fine), primary brand color or brand guide if
+available, and dark or light preference. Do not ask for individual
+theme tokens or insist on colors before showing a preview.
+
+If choices are missing, use these defaults and explain them with the preview:
+
+- Primary color: exact supplied hex; otherwise a suitable color from the logo
+  (describe image-derived colors as approximate); otherwise `#6675f7`.
+- Appearance: requested dark or light; otherwise dark. Choose the page background
+  yourself: `#07050d` for dark or `#f6f7f9` for light unless one was supplied.
+- Trading colors: default green Long/Buy/profit, red Short/Sell/loss and amber
+  warning. Brand accents must not replace these meanings.
+- No logo: use the existing name/text fallback and remove the old app's logo,
+  favicon and social branding as applicable; do not invent a partner logo.
+
+For later restyles, preserve existing choices outside the requested change.
+Changing an accent alone does not imply changing the current background or logo.
+
+## Generate, preview, adjust, then apply
+
+Read [references/palette-preview.md](references/palette-preview.md) for seed
+selection, generation, contrast validation, real-app preview links and the
+adjustment loop. `createTheme(seeds, overrides?)` derives the full palette; never
+ask a partner to configure buttons, backgrounds, borders, charts or dialogs one
+by one. Resolve contrast adjustments yourself and show their visual effect.
+
+Read the relevant sections of
+[references/appearance-map.md](references/appearance-map.md) before editing
+colors or assets. It maps shared tokens to actual components and records
+third-party and share-export limits. For logos, names, favicons or metadata,
+also read [references/branding-assets.md](references/branding-assets.md).
+
+Show the actual application with the proposed branding on reachable screens
+before finalizing; disclose any blocked in-app branding checks. Offer changes
+in plain terms, such as a lighter page, softer accent or larger logo. Apply
+requested adjustments, rerun the affected checks and show the revised preview.
+Continue until the partner accepts the result or has explicitly asked you to
+choose and finalize it. An unanswered preview is not acceptance. Local
+candidate edits are reversible; visual acceptance does not authorize publishing.
+
+## Configuration and implementation boundaries
 
 The app has **one checked-in appearance** in `src/config/partners/default.ts`.
-Set `defaultPartner.theme` for colors, normally with `createTheme` from a few
-seed colors (below), and the surrounding fields for branding. The checked-in
-default is still a literal palette.
-`ThemeColors` and `PartnerConfig` in `src/config/partners/types.ts` define the
-contract. Preserve the existing default theme until a requested change calls for
-modifying it; this skill does not choose a new design by itself.
+Set `defaultPartner.theme` with `createTheme` for a new palette and surrounding
+fields for branding. The checked-in default remains literal until a requested
+restyle. `ThemeColors` and `PartnerConfig` in `src/config/partners/types.ts` define
+the contract. Keep public partner configuration in `src/config/partners` and
+assets in `public/`; do not turn skill files into another configuration source.
 
-`VITE_PARTNER` supplies the backend identity, not a theme selector.
-`createPartnerConfig(id)` combines that validated environment value with the
-single appearance. The frontend origin is taken from the current browser page;
-it is not a build-time input or a partner configuration field.
-Startup chain discovery supplies chains only. A visual change does not require
-changing the ID, chain API, contracts, collateral, API/WS endpoints, WalletConnect
-project ID or signing/account/order logic. Do not restore partner preset registries
-or add light/dark switching unless the user asks for them.
-
-Read [references/appearance-map.md](references/appearance-map.md) for the token
-effects, exact asset consumers, third-party limits and metadata exceptions relevant
-to the requested change. Use the source as authority if it has evolved.
-
-## Create a palette from a few colors
-
-Use this for any new brand palette. Do not hand-pick the ~60 tokens.
-`createTheme(seeds, overrides?)` in `src/config/partners/themeFromSeeds.ts` builds
-every token from a few seed colors (six-digit hex). It covers the surface
-levels, borders, text, button and toggle states, links, focus, overlay and
-shadows. It also keeps text, links, profit/loss and toggle text readable.
-
-| Seed | Required | Ask the user |
-| --- | --- | --- |
-| `background` | yes | Dark or light page? A specific background color? Its lightness picks a dark or light palette. |
-| `accent` | yes | The brand color for buttons and highlights. Offer one taken from the supplied logo. |
-| `long`, `short` | no | Keep the default green/red unless the user asks. Buy/sell and profit/loss must stay clearly distinct. |
-| `warning` | no | Rarely needed; defaults to amber. |
-
-1. Ask the user only for what the table marks. Never ask for individual tokens.
-   Ask first for exact brand hex values from their brand guide, if they have one.
-   Otherwise read the logo's main colors and suggest an accent and a matching
-   dark or light background; colors read from an image are approximate, so say
-   so and let the user confirm or correct them.
-2. Generate two or three options when the choice is open, for example the same
-   accent on dark and on light, or two accents from the logo. Print each one with
-   its contrast report:
-
-   ```sh
-   npx vite-node scripts/theme-from-seeds.ts -- --background '#0b0f14' --accent '#f0b90b'
-   ```
-
-   Lines marked `LOW` are required pairs below the minimum. Pick another seed
-   or override that token. `note` lines are advisory; the default palette has
-   them too (white text on the green/amber fills).
-3. Let the user try each option in the real app. Start the dev server
-   (`npm run dev`) and give one preview link per option, without editing files:
-
-   ```text
-   http://localhost:5173/?themeBg=0b0f14&themeAccent=f0b90b
-   http://localhost:5173/?themeBg=f6f7f9&themeAccent=f0b90b
-   ```
-
-   Optional parameters: `themeLong`, `themeShort`, `themeWarning`. The `#` may be
-   left out. Use the port the dev server reports. The choice stays for that
-   browser tab across navigation and reloads; `?themePreview=reset` returns to
-   the configured theme. Ask the user to click through trading, portfolio and the
-   wallet dialog, on a phone-sized window too, and reply with the option they
-   want. Add a screenshot of each when the user cannot open local links. Preview
-   links work only in the dev server (`src/config/partners/themePreview.ts`,
-   gated by `import.meta.env.DEV`); production builds ignore them. A preview does
-   not change PNG share exports, which read the configured theme. An invalid
-   color is ignored with a console warning.
-4. Apply the chosen option by replacing the `theme` object in `default.ts` with
-   `theme: createTheme({ background: '…', accent: '…' })`, importing `createTheme`.
-   Put any hand-tuned token in the second argument, e.g.
-   `createTheme(seeds, { 'logo-color': '#ffffff' })`, rather than editing the
-   generator. Record the seeds in `DEPLOYMENT.md` for a partner launch.
-5. Check it as in "Verify and hand off". For light palettes also check the chart
-   labels, the RainbowKit wallet dialog and the footer credit. The full-screen
-   WalletConnect "All Wallets" sheet keeps its own dark styling.
-
-Change the generator itself only for a defect that affects every palette. That
-is an app change: record it in `docs/changelog.md`, and re-check the default
-seeds (`#07050d` / `#6675f7`), which reproduce the current palette within a few
-RGB steps.
-
-## Fine-tune individual tokens
-
-Use this to adjust a few tokens, or when the user explicitly wants a hand-made palette.
-
-1. Identify the requested surfaces and states before editing. For example,
-   primary action color affects normal, themed, hover, border, disabled and
-   foreground tokens; it is not a single universal accent field.
-2. With a generated theme, pass the change as an override to `createTheme`. With
-   a literal theme, edit the complete `theme` object in `default.ts` and keep all
-   required keys. Prefer existing semantic tokens in components instead of adding literal
-   colors or new one-off flags. Search consumers with `rg` when a token's effect
-   is unclear.
-3. Use **six-digit hex** (`#6675f7`) for ordinary color tokens. The CSS converter
-   does not expand shorthand hex; ordinary `rgba(...)` loses alpha when converted
-   to RGB channel variables. Keep opacity in consuming utilities or use an
-   appropriate raw token. Raw keys are listed in the reference.
-4. Coordinate `button-primary`/hover with the raw `button-primary-*` fill,
-   border and disabled states. Preserve long/short and up/down meaning while
-   checking contrast for text, focused controls, disabled actions and chart badges.
-5. Keep changes in configuration when tokens suffice. If a requested font,
-   radius or new component style needs implementation changes, inspect
-   `src/index.css`, `tailwind.config.js` and the actual component; those properties
-   are not all controlled by `theme`.
+`VITE_PARTNER` is the backend identity, not a theme selector.
+`createPartnerConfig(id)` combines it with the single appearance. Chain discovery
+supplies chains only. A visual change does not require changing identity,
+contracts, collateral, API/WS endpoints, WalletConnect ID or signing/account/order
+logic. The frontend origin comes from the current browser page. Do not add
+partner presets, a runtime light/dark switch or deployment-origin settings unless
+requested.
 
 Theme application runs in `src/main.tsx` before rendering. In
 `src/config/partners/index.ts`, `applyTheme` updates CSS variables and metadata;
-`applyThemeColors` publishes color changes through `useAppliedThemeColors` to
-React consumers, including the chart and wallet modal. Keep that shared path;
-do not replace it with a separate palette per component.
+`applyThemeColors` publishes colors through `useAppliedThemeColors` to React,
+including the chart and wallet dialog. Use this shared path for consistent
+buttons, backgrounds, borders, charts and dialogs. Do not create per-component
+palettes or hardcoded brand colors. Preserve chart order/position interactions.
+The generator supplies separate foregrounds for accent actions (`content-inverse`)
+and semantic fills (`content-on-up`, `content-on-down`, `content-on-warning`,
+`content-on-long`); use each with its matching fill instead of sharing one inverse
+text color across unrelated actions. These are generated roles, not extra intake
+questions.
 
-Adding a token requires a real UI consumer and corresponding `ThemeColors` key.
-Add a Tailwind mapping if utilities consume it. If it must retain a complete CSS
-value, update `RAW_KEYS` and use it as a complete CSS value rather than wrapping
-it in `rgb(var(...))`. Review token consumers and component literal colors with
-`rg`; this repository has no automated token-coverage check.
+For a narrow token adjustment, pass an override to `createTheme`; preserve all
+required keys in a literal theme. Keep normal/hover/disabled fills, borders and
+foregrounds coordinated. Overrides are an implementation detail, not onboarding
+questions. Use six-digit hex for ordinary tokens. Raw CSS tokens and their alpha
+handling are listed in the appearance map. Add a token only for a real consumer;
+update its type, conversion and Tailwind mapping as needed. Fonts, geometry and
+feature flags are separate from palette generation; change them only as requested.
 
-## Add or replace branding assets
-
-Put supplied assets in `public/`, for example `public/brand/logo.svg`, and use
-root paths such as `/brand/logo.svg` in `defaultPartner`. Keep actual partner
-configuration in `src/config/partners` and the existing public package; the skill
-itself should not become a second configuration source.
-
-Configure the fields needed by the task:
-
-```ts
-// Fields within the existing defaultPartner object; retain its other fields.
-name: 'Example Exchange',
-logoUrl: '/brand/logo.svg',          // Compact icon; keep even with a wordmark.
-wordmarkUrl: '/brand/wordmark.svg',  // Optional full brand lockup.
-favicon: '/brand/favicon.png',
-previewImageUrl: '/brand/social-preview.png',
-previewImageType: 'image/png',
-```
-
-These are example paths, not assets to create automatically. Inspect supplied
-files and ensure the paths exist. For SVG, retain a valid `viewBox` and check
-padding and intrinsic proportions; for raster images, check transparent edges
-and resolution at the rendered sizes. Use compact and horizontal assets for
-their intended slots. Do not stretch a square logo into a wordmark.
-
-The header image is guarded by `logoUrl` even when it uses `wordmarkUrl`.
-`logo-color` colors header text, not a logo loaded through `<img>`; edit the asset
-when its baked-in colors need changing. Keep accessible names tied to `name`.
-Inspect both headers, wallet metadata, position sharing and points sharing—the
-same logo field does not render identically everywhere.
-
-Review `index.html` when changing the brand name, descriptions or social images.
-The build plugin in `vite.config.ts` always sets document title and theme-color
-from the configured name and `theme.base`; it also updates configured favicon
-and social-image tags. Descriptions and OG/Twitter titles remain separately
-authored in `index.html`. Explorer breadcrumbs read `partner.name` directly.
-Search old display-name literals and review translations during a full rename.
-Inspect generated `dist/index.html` after building; a runtime-only change does
-not update what a social crawler reads from static HTML. Use the user's actual
-public asset URL when an absolute social-image URL is needed; do not invent a
-deployment origin or deploy to obtain one.
-
-Wallet icon URLs and referral links derive their origin from the current browser
-page. Do not add a deployment-origin field to the appearance object or environment.
-The local development proxy removes the browser Origin header from HTTP
-forwarding. Its WebSocket handshake uses the backend's fixed approved Origin,
-`https://perps.orbs.network`; this service header does not configure the frontend
-host. Production uses direct requests with the browser's actual origin.
-Footer policy/support links and infrastructure credit are separate from the app logo.
-Policy URLs may stay blank: footer links are then hidden and terms acceptance
-uses plain text labels. Set real document URLs in `defaultPartner.policyUrls`
-when requested; do not invent policy content or use unrelated legal documents.
+Change the generator only for a general defect, record it in the changelog, and
+recheck dark and light palettes plus the original seeds `#07050d` / `#6675f7`.
+Do not alter the checked-in default appearance incidentally. Its literal palette
+preserves existing visuals and is not a contrast-compliance baseline; generated
+themes must pass their own checks.
 
 ## Verify and hand off
 
