@@ -81,6 +81,26 @@ rename must apply to that same verified owned project; explain that its URL will
 change, repeat the provider availability check, and update wallet allowlists,
 activation-origin notes and `DEPLOYMENT.md` for the actual new URL.
 
+## Remove the Netlify hosting badge
+
+For the verified partner project, turn off the **Powered by Netlify badge**
+as part of deployment setup. In the current Netlify UI, use **Project
+configuration > General > Powered by Netlify badge**, switch it off and save.
+Check the [current badge documentation](https://docs.netlify.com/manage/projects/powered-by-netlify-badge/)
+and follow current labels if they change. The setting applies to that project
+for all visitors and takes effect on the next request without a rebuild.
+
+Use the project-wide setting, not the visitor-only **Hide this badge** action;
+a local dismissal does not remove it for other visitors. If the setting is
+locked or unavailable on the actual plan, explain the limitation and ask before
+any paid change. Do not upgrade automatically or claim the badge was removed.
+Record the result or blocker in `DEPLOYMENT.md`.
+
+Verify the draft where applicable and stable public site on desktop and mobile
+using a clean/private browser session without a saved badge dismissal. Check a
+direct route as well as the landing page. Confirm the Netlify hosting badge is
+absent; preserve the app's own branding and required chart attribution.
+
 ## Build and upload the selected site
 
 Before the final build, preserve existing `public/_redirects` rules and add this
@@ -117,7 +137,8 @@ Use Vercel only if the creator already has a paid account; verify current pricin
 
 Check the draft and stable production origin in a browser: HTTPS, intended
 branding/metadata/assets, desktop/mobile layout, keyboard access, direct route
-loads and refreshes, and console/network errors. Check actual browser REST/CORS
+loads and refreshes, absence of the Netlify hosting badge in a clean session,
+and console/network errors. Check actual browser REST/CORS
 and WebSocket access separately when discovery permits. A working local proxy,
 an HTTP-only probe or a reachable page is not hosted access approval. Check
 WalletConnect pairing separately when already configured and reachable. Check
