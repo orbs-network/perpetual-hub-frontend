@@ -73,14 +73,20 @@ already looks like their site. Follow the
 [`perpetual-hub-theme` skill](../perpetual-hub-theme/SKILL.md) for every
 appearance change; this skill decides only when branding happens.
 
-1. Confirm the UI name and colors, and use the logo file dragged into chat or its
-   supplied local path. Offer text-only branding with the default palette when
-   there is no logo or no colors. Portal defaults are not confirmed branding.
+1. Confirm the UI name and use the logo file dragged into chat or its supplied
+   local path. For colors, ask only for a brand color and a dark or light page,
+   preferring exact hex values from a brand guide and otherwise suggesting both
+   from the logo. Give two or three local preview links of generated options so
+   the partner can click through the real app and pick one (the theme skill's
+   seed colors and preview links). Offer text-only branding with the
+   default palette when there is no logo or no colors. Portal defaults are not
+   confirmed branding.
 2. Copy agreed assets into `public/` and apply the name, colors, logo, favicon and
    metadata through the theme skill. Keep identity (`VITE_PARTNER`) separate from
    appearance.
 3. Check the branded app locally on desktop and mobile before publishing.
-4. Record the choices and original/copied asset paths in `DEPLOYMENT.md`.
+4. Record the choices, theme seed colors and original/copied asset paths in
+   `DEPLOYMENT.md`.
 
 Later restyles use the theme skill on its own, then rerun the checks and
 redeploy to the same recorded site; they do not need a full launch.

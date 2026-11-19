@@ -5,7 +5,12 @@ this guide describes the current single-theme implementation.
 
 ## Palette effects
 
-The source palette is `defaultPartner.theme` in `src/config/partners/default.ts`.
+The source palette is `defaultPartner.theme` in `src/config/partners/default.ts`,
+either a literal object or the result of `createTheme` in
+`src/config/partners/themeFromSeeds.ts`. The generator works in OKLCH. It derives
+surface levels from `background`, action colors from `accent`, and trading
+states from `long`/`short`. `checkThemeContrast` reports the main text and action
+pairs. The token table below applies to both.
 `applyThemeColors` in `src/config/partners/index.ts` converts ordinary colors to
 space-separated RGB channels (`--color-base: 7 5 13`), which utilities in
 `tailwind.config.js` consume with opacity support. Some non-CSS consumers, such
@@ -111,6 +116,8 @@ surfaces instead of automatically replacing it with the application brand.
 - **Wallet dialog:** `src/App.tsx` selects RainbowKit light/dark from `surface`,
   sets its primary accent and inverse text, and adds detailed light-mode surface,
   border and text overrides. Not every dark-mode RainbowKit color is mapped.
+  The full-screen WalletConnect "All Wallets" sheet (seen on mobile) is styled by
+  the WalletConnect library and stays dark under a light palette.
   Wallet branding in `src/config/wagmi.ts` uses `name` and `favicon ?? logoUrl`.
   Relative wallet icon paths resolve against the current browser origin; no
   deployment-origin setting belongs in the partner appearance or environment.
