@@ -258,8 +258,9 @@ do not establish financial correctness or trading activation.
 For authorized hosting work, read
 [references/hosting-and-activation.md](references/hosting-and-activation.md) before
 setting up an account/site, uploading a draft or publishing. It owns current-plan
-verification, Netlify name availability and selection, static SPA setup, the
-draft/live checks and separate activation handoff. Keep publication pending when authorization or required checks are
+verification, Netlify name availability and selection, removing the Netlify
+hosting badge, static SPA setup, draft/live checks and separate activation
+handoff. Keep publication pending when authorization or required checks are
 missing; local branding review needs no deployment.
 
 ## Record and hand off

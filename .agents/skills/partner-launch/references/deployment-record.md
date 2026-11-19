@@ -22,6 +22,7 @@ Replace descriptions with actual values; record configured status, never secrets
 - Requested ID preserved / real discovery result / coming-soon or active state:
 - Requested Netlify name / accepted or generated name / provider-confirmed availability:
 - Provider / account and team / verified site ID / stable production URL:
+- Netlify hosting badge: project-wide disabled / clean desktop-mobile verification / plan restriction or blocker:
 - Last draft URL / deployment ID and date:
 - Pricing checked at / official sources / actual plan and spending decision:
 - Public build variables: names and configured/blank status only:
