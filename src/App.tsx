@@ -50,6 +50,7 @@ const RewardsPage = lazy(() =>
 const PointsPage = lazy(() =>
   import("./pages/PointsPage").then((m) => ({ default: m.PointsPage })),
 );
+import { isPartnerApprovalPending } from './config/partners/availability';
 import { wagmiConfig } from "./config/wagmi";
 import { getThemeColorScheme, partner } from "./config/partners";
 import { useAppliedThemeColors } from "./hooks/useAppliedThemeColors";
@@ -175,9 +176,9 @@ function App() {
       profileForeground: theme.raised,
     });
   }
-  const [reconnectOnMount] = useState(shouldReconnectWallet);
+  const [reconnectOnMount] = useState(() => !isPartnerApprovalPending() && shouldReconnectWallet());
   useEffect(() => {
-    if (consumeWalletResetNotice()) {
+    if (!isPartnerApprovalPending() && consumeWalletResetNotice()) {
       toast.info(t("Wallet connection reset. Select your account in your wallet, then connect again."));
     }
   }, [t]);
@@ -192,10 +193,12 @@ function App() {
               <QueryParamProvider adapter={ReactRouterQueryParamAdapter}>
                 <AppChainQueryParamNormalizer />
                 <RuntimeSelectionCacheReset />
-                <WalletConnectionRecovery />
+                {!isPartnerApprovalPending() && <>
+                  <WalletConnectionRecovery />
+                  <TermsAcceptanceModal />
+                  <AuthGuard />
+                </>}
                 <Listeners />
-                <TermsAcceptanceModal />
-                <AuthGuard />
                 <AppHeaderShell>
                   <Header />
                 </AppHeaderShell>

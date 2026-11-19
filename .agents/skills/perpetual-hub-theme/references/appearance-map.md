@@ -126,6 +126,13 @@ surfaces instead of automatically replacing it with the application brand.
   `src/stores/chartPreferencesStore.ts` persists chart type, periods, studies and
   drawing geometry/locks, but no palette or financial data. Restored charts and
   drawings continue to use the single configured theme.
+- **Branding before approval:** `npm run dev` automatically renders the real UI
+  read-only when validated discovery returns no active chains, with a permanent
+  coming-soon toast. The same pending state applies in production. Wallets and
+  account actions are disabled, and the navbar chain selector and wallet connection
+  buttons are hidden; this cannot verify the wallet picker or funded
+  overlays. Connection and validation errors retain Retry; see
+  [preview guidance](palette-preview.md).
 - **Wallet dialog:** `src/App.tsx` selects RainbowKit light/dark from `surface`,
   sets its primary accent and inverse text, and adds detailed light-mode surface,
   border and text overrides. Not every dark-mode RainbowKit color is mapped.

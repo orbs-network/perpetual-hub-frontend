@@ -10,6 +10,7 @@ import { PublicDashboardShell } from "@/components/PublicDashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { partner } from "@/config/partners";
+import { isPartnerApprovalPending } from "@/config/partners/availability";
 import { useAuth } from "@/hooks/useAuth";
 import { useClientPagination } from "@/hooks/useClientPagination";
 import { useTranslation } from "@/hooks/useSafeTranslation";
@@ -95,15 +96,15 @@ function PointsTable({
     </div>
   ) : needsWalletConnection ? (
     <div className="flex min-h-[470px] min-w-[360px] flex-col items-center justify-center gap-3 px-6 text-center text-[13px] font-medium text-content-muted">
-      <span>{t("Connect your wallet to view your points.")}</span>
-      <Button
+      <span>{t(isPartnerApprovalPending() ? "Trading is not available yet." : "Connect your wallet to view your points.")}</span>
+      {!isPartnerApprovalPending() && <Button
         className="h-8 rounded-[7px] bg-button-primary px-4 text-[12px] font-medium text-content hover:bg-button-primary-hover"
         loading={isConnecting}
         onClick={connect}
         type="button"
       >
         {t("Connect")}
-      </Button>
+      </Button>}
     </div>
   ) : (
     <div className="flex min-h-[470px] min-w-[360px] items-center justify-center px-6 text-center text-[13px] font-medium text-content-muted">

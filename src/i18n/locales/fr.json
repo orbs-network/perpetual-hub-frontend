@@ -538,5 +538,7 @@
   "Deposits minus withdrawals, adjusted for realized PNL, funding, and trading fees.": "Dépôts moins retraits, ajustés du PNL réalisé, du financement et des frais de trading.",
   "Funds available after unrealized losses and initial margin reserved for positions and open orders.": "Fonds disponibles après les pertes non réalisées et la marge initiale réservée aux positions et ordres ouverts.",
   "Initial margin currently reserved for open positions.": "Marge initiale actuellement réservée aux positions ouvertes.",
-  "The minimum account equity required to keep open positions.": "Fonds propres minimum requis pour conserver les positions ouvertes."
+  "The minimum account equity required to keep open positions.": "Fonds propres minimum requis pour conserver les positions ouvertes.",
+  "This app will be available soon": "Cette application sera bientôt disponible",
+  "Trading is not available yet.": "Le trading n’est pas encore disponible."
 }

@@ -7,6 +7,8 @@ import { getAppTargetChainId, getPartnerChainIds } from '@/utils/config';
 import { getChainDetails } from './chains';
 import { RPC_URLS_BY_CHAIN } from './constants';
 
+import { isPartnerApprovalPending } from './partners/availability';
+
 export const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
 function getChain(chainId: number): Chain {
@@ -111,7 +113,7 @@ export const wallets = isMobile
  * then `createConfig`. `connectorsForWallets` supplies the configured partner
  * name and current-origin icon to wallet connection metadata.
  */
-export const connectors = connectorsForWallets(wallets, {
+export const connectors = isPartnerApprovalPending() ? [] : connectorsForWallets(wallets, {
   appName: partner.name,
   appIcon: typeof window !== 'undefined'
     ? new URL(partner.favicon ?? partner.logoUrl, window.location.origin).href
@@ -123,4 +125,7 @@ export const wagmiConfig = createConfig({
   chains: allChains,
   connectors,
   transports,
+  ...(isPartnerApprovalPending()
+    ? { storage: null, multiInjectedProviderDiscovery: false }
+    : {}),
 });

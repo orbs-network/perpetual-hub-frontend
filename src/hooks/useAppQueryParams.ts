@@ -10,6 +10,8 @@ import {
 } from "@/lib/appQueryParams";
 import { isAddress } from "viem";
 
+import { isPartnerApprovalPending } from '@/config/partners/availability';
+
 function isUserSessionPath(pathname: string) {
   return pathname === "/user-session" || pathname === "/use-session";
 }
@@ -25,14 +27,14 @@ export function useAppQueryParams() {
   );
 
 
-  const sharedSession = (query.s ?? null) as SharedSession | null;
+  const sharedSession = (isPartnerApprovalPending() ? null : query.s ?? null) as SharedSession | null;
   const rawViewerAddress = sharedSession?.address ?? query.v ?? undefined;
-  const viewerAddress = rawViewerAddress && isAddress(rawViewerAddress, { strict: false })
+  const viewerAddress = !isPartnerApprovalPending() && rawViewerAddress && isAddress(rawViewerAddress, { strict: false })
     ? rawViewerAddress
     : undefined;
 
   return {
-    address: query.address ?? "",
+    address: isPartnerApprovalPending() ? "" : query.address ?? "",
     viewerAddress,
     sharedSession,
     query,

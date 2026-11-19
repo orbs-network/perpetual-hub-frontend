@@ -1,5 +1,6 @@
 import axios, {
   AxiosHeaders,
+  CanceledError,
   type AxiosInstance,
   type AxiosError,
 } from 'axios';
@@ -13,6 +14,8 @@ import {
   notifyServerUnavailable,
 } from '@/lib/serverAvailability';
 import { useAuthStore } from '../stores/authStore';
+
+import { getPublicDisplayReadIdentity, isPartnerApprovalPending } from '@/config/partners/availability';
 
 const PARTNER_CHAIN_NOT_SUPPORTED_CODE = "INVALID_PARTNER_CHAIN_KEY";
 const PARTNER_CHAIN_NOT_SUPPORTED_TOAST_ID = "partner-chain-not-supported";
@@ -117,10 +120,13 @@ function attachApiClientInterceptors(
   resolvePartnerChain: ApiPartnerChainResolver,
 ) {
   apiClient.interceptors.request.use((config) => {
-    config.headers = withPartnerChainHeaders(
-      config.headers,
-      resolvePartnerChain(),
-    );
+    if (isPartnerApprovalPending()) {
+      const identity = getPublicDisplayReadIdentity(config.method, config.url);
+      if (!identity) throw new CanceledError('Read-only app permits public market reads only');
+      config.headers = withPartnerChainHeaders(undefined, identity);
+    } else {
+      config.headers = withPartnerChainHeaders(config.headers, resolvePartnerChain());
+    }
     return config;
   });
 
@@ -134,6 +140,7 @@ function attachApiClientInterceptors(
 
       const errorMessage = error.response?.data?.error;
       if (
+        !isPartnerApprovalPending() &&
         (error.response?.status === 401 ||
           errorMessage?.includes("invalid signature") ||
           errorMessage?.includes("INVALID_SIGNATURE"))

@@ -11,31 +11,51 @@ scaffold a replacement. A launch request authorizes its own-account publication
 within the stated cost limits; this skill alone authorizes no deployment,
 purchase, commit, push or team message. API-only integrations do not need hosting.
 
-## One request covers branding and deployment
+## Keep the partner's flow simple
 
-Handle the launch end to end. Load the adjacent theme skill yourself; the partner
-does not need to invoke a second skill or manage the handoff. Reuse the brief,
-files and earlier answers. Ask once for missing branding preferences the partner
-has not delegated. On a new Netlify launch, include their preferred
-`name.netlify.app` address in that intake; updates retain the recorded URL. Use
-the documented defaults for omitted or delegated choices. Choose routine
-implementation, palette, build and hosting details yourself.
+Handle the launch end to end, loading the adjacent theme skill yourself. The
+partner does not need to invoke another skill, edit configuration, run commands
+or choose technical tools. Reuse the brief, supplied files and earlier answers.
+Introduce the flow in one sentence: “We'll add your branding, review your app,
+then choose its website address and publish it.”
 
-Show the branded preview and allow adjustments as described below. If the
-partner explicitly asks you to choose and finish, keep the preview available
-and complete the authorized launch without waiting for design approval. Once
-the design is accepted or finalization is delegated and the checks pass, proceed
-through the hosted draft, production deployment and live verification. Do not
-ask again whether to deploy an already requested launch.
+Keep questions in this order, asking only for missing, undelegated choices:
 
-Ask again only for information or action needed to proceed: a missing partner
-identity/source location, a taken or invalid requested Netlify name, an
-unresolved account/site ownership conflict,
-login/MFA in the partner's browser, their own wallet project ID for requested
-QR/mobile pairing, a design choice they reserved for review, or spending/DNS
-changes outside the authorized scope. Continue independent local
-work while such input is pending. Publication and trading activation remain
-separate.
+1. **Logo:** request the file or local path; offer text-only branding. Wait for
+   that reply or a skip before asking about appearance.
+2. **Appearance:** ask dark/light and primary color together. Include the app
+   name here only if it is still missing. Offer to choose sensible defaults.
+3. **Preview:** show the actual branded app, explain any coming-soon notice,
+   and allow adjustments. Apply changes until accepted or finalization is delegated.
+4. **Website address:** only after design review, ask for `name.netlify.app` or
+   a generated address. Then handle Netlify availability, account setup and login.
+5. **Published link and handoff:** verify the website, report activation status,
+   and leave any missing WalletConnect setup as concise written instructions.
+
+Skip answered/delegated questions. On updates, reuse the accepted branding and
+recorded site; collect only the requested changes. Keep progress messages short,
+state the current step and next action, and explain browser/login popups when
+needed. Keep implementation details, public theme tokens and check results in
+local notes rather than turning them into tasks for the partner.
+
+Complete the local branded preview and visual checks before any Netlify
+signup/login, linking, availability check or site creation, including when
+finalization was delegated upfront. Then proceed after acceptance or delegation.
+Reuse supplied address choices when that stage arrives. A missing WalletConnect project ID stays blank
+through publication; do not ask for it or open Reown during launch.
+
+A launch request already authorizes publication within its scope. Once the
+design is accepted or finalization is delegated and checks pass, continue through
+hosted draft, production and live verification without asking again whether to
+deploy. If the partner asked you to choose and finish, show the preview and
+continue without an extra design-approval question. Otherwise, an unanswered
+preview is not acceptance.
+
+Pause only for required missing information or action: the source/partner ID,
+a reserved design choice, an invalid/taken requested address, conflicting site
+ownership, hosting login/MFA or costs outside the authorized limit. Continue
+independent local work while waiting. Keep website publication and trading
+activation separate. Do not ask the partner to resolve team-only approval facts.
 
 A partner who wants minimal interaction can use this request in the agent chat
 opened on their permanent checkout, together with their launch brief:
@@ -66,8 +86,6 @@ switch branches, and do not ask the partner about Git branches; the `AGENTS.md`
 `codex/` branch rule applies to upstream contributors, not partner launches.
 Make routine technical choices yourself and explain them afterwards in plain words.
 
-Explain permission/browser popups in plain words.
-
 ## Tools and public configuration
 
 Use **Node.js 22.12 or newer**, compatible with `package.json`; CI currently uses
@@ -78,6 +96,16 @@ LTS in the user's home via the current official
 sudo, Homebrew, an admin password or Apple developer tools. Keep CLI installs in
 the user's home. Git preparation must happen before cloning, as the brief says.
 
+Before the first local preview, install dependencies from the lockfile,
+including build tools even under production npm settings:
+
+```sh
+npm ci --include=dev
+```
+
+Do this locally while collecting branding; it is not a partner question or a
+Netlify setup step. Confirm the dev server can start before promising a link.
+
 Write the supplied partner values into ignored `.env.local`, preserving unrelated
 settings. Verify `git check-ignore .env.local`. The current settings are:
 
@@ -87,66 +115,24 @@ VITE_WALLETCONNECT_PROJECT_ID=
 ```
 
 Use the requested ID for a preview, preserving its exact spelling. Before actual
-trading use the team-confirmed assigned ID. Never switch to `global`, copy its
-configuration/contracts, invent addresses or mock browser responses to bypass
-unavailability. Never copy private or machine-wide configuration into this repo.
+trading use the team-confirmed assigned ID. Never switch the partner ID to
+`global`, copy its contracts into partner configuration, invent tradable
+addresses or mock browser responses. Use the automatic read-only state below
+for visual review while approval is pending. Never copy private or machine-wide
+configuration into this repo.
 
 All `VITE_` values become public browser assets. The optional WalletConnect/Reown
 project ID must belong to this partner; it is a public project ID, not a secret.
-If absent, guide setup below; if skipped or unavailable, explicitly leave it
-blank and report QR/mobile pairing as pending. Do not retain another app's ID.
+If absent, explicitly leave it blank for the preview and published build, and
+record QR/mobile pairing as deferred. Do not ask for it, open Reown in a browser,
+or wait for account creation during the launch. Provide the written follow-up
+below instead. Do not clear an existing partner-owned ID or retain another app's ID.
 Check shell/mode-file precedence without dumping the environment. Restart
 development and rebuild after changing build settings.
 API/WS endpoints currently come from source, not extra invented env variables.
 Keep passwords, tokens, keys, seed phrases and onboarding signatures/proofs out
 of chat, code, commits, build output, notes and backups. Real environment files
 and provider login state stay local and ignored.
-
-## Guide mobile wallet setup
-
-When a new launch has no WalletConnect project ID, raise it with the first
-missing-input questions and explain: “To offer QR codes and links that open
-visitors' mobile wallet apps, we need a project ID from your own Reown account.
-I'll walk you through getting it and handle the app settings. Installed browser
-wallets such as MetaMask still work if you skip this.” Do not just ask a nontechnical
-partner to supply an unexplained ID. Reuse this app's partner-owned project on
-updates rather than making them create another one.
-
-Guide the partner in small steps, using the current official interface:
-
-1. Open [Reown Dashboard](https://dashboard.reown.com/) in their browser. Let
-   them sign up or sign in and complete any email/MFA steps themselves. Verify
-   the current free option and limits against [pricing](https://reown.com/pricing)
-   and their account; ask before any paid plan or charge.
-2. In their own team/account, create a project named after their app. The
-   [official walkthrough](https://reown.com/blog/how-reown-analytics-helps-onchain-teams-grow-faster-and-smarter)
-   uses **+ Project → AppKit → app name → Create**; follow current labels if
-   these change. This obtains an ID for the existing RainbowKit integration;
-   keep the app's current wallet libraries and configuration.
-3. Open the project and copy the value labelled **Project ID**. Ask them to
-   share that public ID, or read it from the authorized browser. Explain that
-   it is different from their dPERPS partner ID and needs no wallet recovery
-   phrase, private key or account password.
-4. Set `VITE_WALLETCONNECT_PROJECT_ID` in ignored `.env.local` yourself, check
-   precedence, restart the preview and rebuild before uploading. The partner
-   should not need to edit files or run commands.
-5. Once the actual draft and stable site URLs exist, guide the partner through
-   the project's allowed-domain/origin settings using the
-   [relay guide](https://docs.reown.com/cloud/relay). Supply the exact website
-   origins yourself (scheme and host, plus port if present, without a path).
-   Include each draft and production origin used for pairing; retain
-   needed existing entries on updates. Localhost and `127.0.0.1` are permitted
-   by the relay; allowlist changes can take 15 minutes to apply.
-6. Check the WalletConnect QR/mobile options locally and on the hosted site;
-   distinguish a visible option from a successful real pairing. Follow the
-   connection-only checks in [hosting-and-activation.md](references/hosting-and-activation.md).
-   Record setup and pairing as passed, pending or blocked, including when
-   partner discovery prevents reaching the wallet UI.
-
-If signup or a reply is pending, continue independent branding/build work. If
-the partner skips setup, continue the launch with an explicitly blank ID and
-state the browser-wallet-only limitation. Never substitute a demo/shared ID or
-claim QR/mobile pairing passed without checking it.
 
 ## Brand, preview and revise
 
@@ -156,17 +142,21 @@ changes. Follow the
 [`perpetual-hub-theme` skill](../perpetual-hub-theme/SKILL.md) for palette generation,
 assets, contrast checks and local preview mechanics.
 
-1. Reuse information in the brief and ask together for missing preferences the
-   partner has not delegated, in plain words. For example: “What name should appear in the app? Please attach
-   your logo or give its local file path (text-only is fine). What is your primary
-   brand color or brand-guide hex, if you have one? Do you prefer a dark or light
-   theme? What address would you like, such as `your-brand.netlify.app`? The
-   address must end in `.netlify.app`; I can also use a generated name. I can
-   choose sensible defaults for the design.” Explain that they choose the part
-   before `.netlify.app`, not a domain to buy. Reuse a supplied address or explicit
-   delegation instead of asking again. Do not ask for individual theme tokens.
-   Portal defaults are not confirmed branding.
-2. If colors are omitted or delegated, take a suitable primary color from the
+1. **Ask for the logo first.** Reuse a logo already supplied; otherwise ask:
+   “Please attach your logo or give its local file path. You can also choose
+   text-only branding.” Wait for the logo reply or an explicit skip/delegation
+   before asking the appearance question. Keep this question focused on the
+   logo; do not bundle colors, theme mode, hosting or wallet setup into it.
+2. **Ask about theme and colors next.** After the logo is supplied or skipped,
+   inspect any supplied asset and ask only for missing, undelegated choices:
+   “Do you prefer a dark or light theme? What primary brand color or brand-guide
+   hex should I use, or should I suggest one from your logo?” If there is no
+   logo, offer the default brand color instead of logo-derived colors. Label
+   image-derived suggestions as approximate. Do not ask for individual tokens
+   or repeat choices already supplied with the logo or brief. If the app name is
+   still missing, include “What name should appear in the app?” in this same
+   appearance question; reuse a supplied name or explicit naming delegation.
+3. If colors are omitted or delegated, take a suitable primary color from the
    supplied logo, identifying it as approximate, or use `#6675f7`. Use the chosen
    mode, with dark as the default when the partner has no preference. The theme
    skill supplies the background defaults and derives the complete palette;
@@ -174,21 +164,35 @@ assets, contrast checks and local preview mechanics.
    choices were supplied and which were inferred or defaulted. Missing colors
    or a logo must not stall a preview; offer text-only branding when no logo is
    available, and do not invent a partner logo.
-3. Copy supplied assets into `public/` and apply the actual name, logo, favicon
+
+   Portal defaults are not confirmed branding. Keep Netlify setup until after
+   review, and missing wallet setup in the written final handoff.
+
+4. Copy supplied assets into `public/` and apply the actual name, logo, favicon
    and metadata locally through the theme skill before showing the app. Keep
    identity (`VITE_PARTNER`) separate from appearance. Use generated palettes
    through the shared theme configuration, not per-component color edits.
-4. Generate a working local preview of the branded application, with the actual
+5. Generate a working local preview of the branded application, with the actual
    name/logo on reachable screens and proposed palette. Check desktop and mobile
-   yourself. Share the local app link and screenshots when local links cannot be opened; color
-   swatches alone are not an application preview. One coherent proposal is
-   enough unless useful alternatives remain open. Preserve the requested ID
-   and genuine unavailable-discovery screen; explain when that prevents a full
-   trading-screen preview. The current unavailable bootstrap also hides the
-   app header/name/logo, so record in-app logo and header/drawer checks as
-   blocked; an asset shown separately is not that review. Do not substitute
-   `global` or mocked market/account data to make a prettier preview.
-5. Invite adjustments before finalizing: “Here is your branded preview. Would
+   yourself. Share a clickable local app link; use screenshots when the partner
+   cannot open it. Color swatches alone are not an application preview. One
+   coherent proposal is enough unless useful alternatives remain open. Run
+   `npm run dev` with the original requested partner ID and use the actual reported port. A validated
+   empty discovery response automatically shows the real UI read-only with
+   public market data, display-only metadata and a permanent coming-soon toast;
+   the navbar chain selector and connection buttons are hidden, and wallets,
+   accounts and financial actions are disabled. Before showing that state,
+   explain in plain words: “You can review the design now. The coming-soon
+   notice is expected until the team activates trading; wallet connections
+   will appear after activation.” The notice has a clock icon at the top right
+   and cannot be dismissed. No preview flag or partner action is needed to
+   preview the design.
+   Connection failures and invalid responses still show Retry; resolve or
+   report those blockers. Do not change the identity, configure tradable
+   fallback contracts or mock browser responses. Report private/funded states
+   and the wallet picker as unverified while approval is pending. A failed
+   public data feed remains a real error, not fake candles.
+6. Invite adjustments before finalizing: “Here is your branded preview. Would
    you like changes to the logo, primary color, or dark/light theme, or should I
    use this version?” Apply requested changes, rerun contrast/visual checks and
    show the revised preview until accepted. Leave the preview ready while the
@@ -196,8 +200,13 @@ assets, contrast checks and local preview mechanics.
    defaults and finish, or to skip review, permits completing the authorized
    work without another approval. A general launch/publication request alone
    does not select an unseen design.
-6. Persist the chosen generated palette, reset temporary preview colors and
-   verify the configured result. Record the choices, supplied/defaulted inputs,
+7. Persist the chosen generated palette. Clear temporary seed-preview colors
+   with `?themePreview=reset`, then verify the saved appearance without preview
+   parameters so the build matches the accepted design. Record real discovery.
+   An empty-chain result means trading activation is pending: local and hosted
+   sites show the real UI read-only with a permanent coming-soon toast. Connection failures
+   or invalid discovery still show Retry. A visual preview is not evidence of
+   approval. Record the choices, supplied/defaulted inputs,
    final theme seed colors, asset paths and review outcome in `DEPLOYMENT.md`
    using [references/deployment-record.md](references/deployment-record.md).
 
@@ -205,20 +214,44 @@ Later restyles use the theme skill on its own, then rerun the checks and the
 publication procedure for the same recorded site and URL; do not repeat URL
 selection on an update unless the partner requests a rename.
 
+## Netlify setup at the end
+
+Complete the branded preview and local visual checks first, even when the
+partner delegated finalization upfront. Once that preview is accepted or its
+finalization is delegated, begin Netlify signup/login, account linking, address
+availability checks and site creation. Do not open the Netlify dashboard or
+ask hosting questions during logo collection, color selection or preview review. Reuse
+supplied choices and existing site records without repeating questions.
+
+Ask for the preferred address only if it is still missing and not delegated:
+“What address would you like, such as `your-brand.netlify.app`? It must end in
+`.netlify.app`; I can also use a generated name.” Explain that they choose the
+part before `.netlify.app`, not a domain to buy. Reuse an existing site's URL on
+updates unless a rename is requested.
+
+Read [references/hosting-and-activation.md](references/hosting-and-activation.md)
+before account/site setup and availability checking. Follow its available/taken/
+generated-name handling, current-plan and ownership requirements. Missing
+WalletConnect setup does not hold up URL selection or publication.
+
 ## Check and publish
 
-Install from the lockfile, including build tools even under production npm
-settings, then run all four checks with the intended partner environment:
+Use a supplied partner-owned WalletConnect ID if available, otherwise leave it
+blank and continue. Restart the local preview if build-time settings changed.
+Dependencies must already be installed for the preview. If their manifests or
+lockfile changed, reinstall with `npm ci --include=dev`. Run all four checks with
+the final saved branding and partner environment before uploading. Earlier
+preview checks do not replace these final checks:
 
 ```sh
-npm ci --include=dev
 npm run check:public
 npm run typecheck
 npm run lint
 npm run build
 ```
 
-Fix/report failed checks before publishing. Do not change partner identity to
+Fix failed checks before publishing; if they cannot pass, report the specific
+blocker and leave publication pending. Do not change partner identity to
 make a check pass. The current app has no automated test suite; these checks
 do not establish financial correctness or trading activation.
 
@@ -226,8 +259,7 @@ For authorized hosting work, read
 [references/hosting-and-activation.md](references/hosting-and-activation.md) before
 setting up an account/site, uploading a draft or publishing. It owns current-plan
 verification, Netlify name availability and selection, static SPA setup, the
-draft/live checks and separate activation
-handoff. Keep publication pending when authorization or required checks are
+draft/live checks and separate activation handoff. Keep publication pending when authorization or required checks are
 missing; local branding review needs no deployment.
 
 ## Record and hand off
@@ -239,6 +271,26 @@ and trading activation separate; record blocked checks rather than claiming
 success. If build scripts, Node requirements, env settings, discovery or hosting
 procedure change, update this skill and relevant references in the same change.
 
-Finish in plain language: “Here's your link”, “Here's where your files and backup
-are”, and “Here's what still needs the team”. Include the actual future-update
-prompt from the notes and keep publication separate from activation.
+Finish with the actual results in this order:
+
+- **Website:** the verified stable clickable URL, or the precise publication blocker.
+- **Trading:** active only when verified; otherwise explain the expected
+  coming-soon state and give the actual URL/contact for the team handoff.
+- **Files:** the permanent source folder, private backup and a ready-to-copy
+  future-update prompt using those actual records.
+- **Optional mobile-wallet setup:** only the relevant written follow-up below.
+
+Do not call the app ready for trading just because the website is published.
+If an actual API/CORS error prevents hosted market data from loading, say so
+separately; a coming-soon notice does not prove connectivity. Keep detailed
+technical evidence in `DEPLOYMENT.md`, with a short partner-facing explanation.
+
+## WalletConnect follow-up
+
+A missing ID does not hold up publication. At the end, read
+[references/walletconnect-follow-up.md](references/walletconnect-follow-up.md)
+and provide its concise written instructions using the actual published origin
+and permanent source folder. Do not open Reown or start an account walkthrough.
+If an owned ID is already configured, include only genuinely pending origin or
+pairing checks. Explain that wallet setup and team activation are separate;
+connection controls remain hidden until approval.

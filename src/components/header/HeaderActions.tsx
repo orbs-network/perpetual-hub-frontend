@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useActiveAddress } from "@/hooks/useActiveAddress";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useAccount } from "wagmi";
+import { isPartnerApprovalPending } from "@/config/partners/availability";
 
 export function HeaderActions() {
   const { t } = useTranslation();
@@ -24,7 +25,7 @@ export function HeaderActions() {
         isMobile ? "gap-1" : "gap-2"
       }`}
     >
-      {!isConnected ? (
+      {isPartnerApprovalPending() ? <LanguagePopover /> : !isConnected ? (
         <>
           <HeaderChainSelector />
           <LanguagePopover />

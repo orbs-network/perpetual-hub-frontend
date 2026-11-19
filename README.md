@@ -27,6 +27,15 @@ previews use those same endpoints directly with the browser's actual origin.
 Trading actions use the configured backend;
 connecting a wallet and signing requests have their normal live meaning.
 
+## Preview branding before partner activation
+
+Keep the requested `VITE_PARTNER` and run `npm run dev`. Partners without active
+chains automatically see the read-only app and coming-soon notice described
+below; no preview flag is needed. Color-preview links (`?themeBg=…&themeAccent=…`)
+work in the dev server. Approved partners retain normal wallet/trading behavior.
+Account/funded states and the wallet picker cannot be verified while approval
+is pending. Connection failures and invalid discovery still show Retry.
+
 ## Configure the partner and chains
 
 This app has one partner and one appearance. Set the required `VITE_PARTNER` in
@@ -56,11 +65,20 @@ Changes to build scripts, Node requirements, env settings, discovery or hosting
 must update the skill in the same change. A launch prompt carries partner data
 and pre-clone safeguards rather than another copy of these steps.
 
+Before activation, a validated empty chain response shows the branded app with
+public market data and a persistent, non-dismissible “This app will be available
+soon” toast. The navbar chain selector and all wallet connection buttons are hidden;
+private account data and financial actions remain disabled, and display metadata uses zero contract/collateral addresses.
+The requested partner identity is preserved; only allowlisted public GET reads
+use the existing public data lane. Approval takes effect on the next page load
+when discovery returns valid active chains. Connection failures and malformed
+responses still show the startup error and Retry.
+
 At startup, `src/api/partnerChains.ts` calls the async `fetchPartnerChains(partnerId)`
 boundary. For now it is an explicitly temporary mock API, serving the existing
 `global` Arbitrum lane from the `registry` in
 `src/config/partners/registry.ts`.
-Other IDs return an unavailable state rather than borrowing that lane. Replace
+Other IDs return empty discovery and show the read-only coming-soon state. Replace
 this function's mock transport with the partner-ID API once its endpoint and
 response contract are available. The response is `{ partnerId, chains }`; each
 chain provides its ID, display name, contract address, collateral address,
@@ -69,8 +87,8 @@ symbol and decimals. Wallet/RPC metadata is looked up by ID in the installed
 that catalog are rejected during discovery.
 
 The app validates the response and waits before constructing wallets or
-mounting trading/account queries. Empty, malformed, mismatched or failed
-responses show a retry screen. The chain selector, wallet networks and active
+mounting trading/account queries. Empty responses enter the read-only state;
+malformed, mismatched or failed responses show a retry screen. The chain selector, wallet networks and active
 contract/collateral scope all use the returned chains. `?chain=` selects only
 among those chains; unsupported selections fall back to the first returned
 chain. Account/order validation still belongs to the backend/TEE.
@@ -89,7 +107,7 @@ Configure document URLs in `src/config/partners/default.ts` when available.
 | `VITE_PARTNER` | Required backend partner ID, used directly; the example and temporary mock use `global`. |
 | `VITE_WALLETCONNECT_PROJECT_ID` | Your own optional WalletConnect project ID for QR/mobile wallet pairing. Injected browser wallets remain available without it. |
 
-These deployment inputs are validated once through
+The partner ID and WalletConnect deployment inputs are validated once through
 `src/config/partners/environment.ts` in both Vite and the browser. The environment
 example lists every supported user setting. An empty WalletConnect project ID
 leaves injected wallets available.

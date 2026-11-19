@@ -30,7 +30,7 @@ const TRADE_SUB_TABS: TradingTabOption<TradeSubTab>[] = [
 ];
 
 const MOBILE_MARKET_PANEL_HEIGHT_CLASS = "h-[420px]";
-const MOBILE_TRADING_PAGE_HEIGHT_CLASS = "h-[calc(100dvh-57px)]";
+const MOBILE_TRADING_PAGE_HEIGHT_CLASS = "h-[calc(100dvh-var(--app-header-height)-var(--app-status-height,0px))]";
 const BOTTOM_NAV_TABS: {
   id: BottomNav;
   label: string;

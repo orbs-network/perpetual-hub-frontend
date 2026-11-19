@@ -23,6 +23,8 @@ import { useTargetChain } from "@/hooks/useTargetChain";
 import { DepositForm } from "./deposit/DepositForm";
 import { useFirstInteractionStore } from "@/stores/firstInteractionStore";
 
+import { isPartnerApprovalPending } from '@/config/partners/availability';
+
 const MOBILE_QR_RESCAN_TEXT = "Enable Trading On Desktop And Scan QR Again";
 
 interface AuthGuardButtonProps {
@@ -503,6 +505,10 @@ export function AuthGuardButton({
       isLoggingIn={enableTradingModal.isLoggingIn}
     />
   );
+
+  if (isPartnerApprovalPending()) {
+    return null;
+  }
 
   if (passthrough && needsAuth) {
     return (

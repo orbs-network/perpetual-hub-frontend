@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import {
   SERVER_AVAILABLE_EVENT,
@@ -13,6 +13,7 @@ import {
  */
 export function ServerUnavailableBanner() {
   const [unavailable, setUnavailable] = useState(false);
+  const bannerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const onUnavailable = () => setUnavailable(true);
@@ -25,10 +26,27 @@ export function ServerUnavailableBanner() {
     };
   }, []);
 
+  useLayoutEffect(() => {
+    const banner = bannerRef.current;
+    const shell = banner?.closest<HTMLElement>('[data-testid="app-shell"]');
+    if (!banner || !shell) return;
+    const measure = () => {
+      shell.style.setProperty('--app-status-height', `${banner.getBoundingClientRect().height}px`);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(banner);
+    return () => {
+      observer.disconnect();
+      shell.style.removeProperty('--app-status-height');
+    };
+  }, [unavailable]);
+
   if (!unavailable) return null;
 
   return (
     <section
+      ref={bannerRef}
       role="status"
       aria-live="polite"
       aria-label="Trading server reconnecting"

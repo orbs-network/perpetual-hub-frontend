@@ -3,6 +3,14 @@ import type { PartnerChainConfig } from '@/config/partners/types';
 import { registry } from '@/config/partners/registry';
 import { findChainById } from '@/config/chains';
 
+/** An empty, validated discovery response means this partner has no active chains yet. */
+export class PartnerApprovalPendingError extends Error {
+  constructor() {
+    super('No chains are available for this partner');
+    this.name = 'PartnerApprovalPendingError';
+  }
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -17,7 +25,7 @@ export function parsePartnerChains(response: unknown, partnerId: string): readon
     throw new Error('Invalid partner chains response');
   }
   if (!response.chains.length) {
-    throw new Error('No chains are available for this partner');
+    throw new PartnerApprovalPendingError();
   }
   const seen = new Set<number>();
   return Object.freeze(response.chains.map((entry: unknown) => {

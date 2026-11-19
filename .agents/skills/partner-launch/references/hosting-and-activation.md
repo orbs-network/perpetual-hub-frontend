@@ -1,8 +1,14 @@
 # Publish and verify a partner site
 
-Read this before any hosting setup or deployment, after the local branding review
-and source checks in `../SKILL.md`. Paths and commands are relative to the app
-repository root. This procedure supplies no additional publication authorization.
+Read this before any hosting setup or deployment, in the final launch-setup
+phase after local branding review in `../SKILL.md`. Complete the final build-time
+configuration and source checks before uploading. Paths and commands are
+relative to the app repository root. This procedure supplies no additional
+publication authorization. Complete the branded preview and visual checks even when finalization was
+delegated upfront. Defer Netlify signup/login, account linking, name availability
+checks and project creation until this final phase; do not interrupt
+branding or preview review with hosting setup.
+
 When the partner already requested a launch and accepted the design or delegated
 finalization, continue through draft upload, production publication and live
 checks without another general deployment-confirmation question. Keep the
@@ -19,8 +25,10 @@ Default to Netlify's free option only if it fits **the current account and terms
 At every launch/update, read [current pricing](https://www.netlify.com/pricing/)
 and linked usage/terms documentation; inspect the account's actual plan, including
 legacy plans. Explain commercial-use eligibility, deployment/traffic consumption,
-pauses, overages, recharge and upgrade triggers in plain words. Record the date,
-source links and decision in `DEPLOYMENT.md`. Do not rely on remembered prices
+pauses, overages, recharge and upgrade triggers in plain words when relevant to
+the actual plan. Give the partner a short cost summary and any decision they
+must make; keep detailed pricing evidence, the date and source links in
+`DEPLOYMENT.md`. Do not rely on remembered prices
 or fixed quotas in this file. If pricing cannot be verified, prepare locally and
 report publication pending. Ask before spending, upgrades, auto-recharge, paid
 features, DNS changes or a paid alternative.
@@ -28,9 +36,9 @@ features, DNS changes or a paid alternative.
 ## Choose and verify the Netlify address
 
 Use a Netlify-provided address such as `https://your-brand.netlify.app`. Collect
-its preferred name with the branding intake in `../SKILL.md`, reusing a supplied
-choice or delegation. Explain that the partner chooses `your-brand` and the
-address ends in **`.netlify.app`**. This launch flow does not offer custom-domain
+its preferred name at the end, after branded-preview acceptance or delegated
+finalization in `../SKILL.md`, reusing a supplied choice or delegation. Explain that the partner chooses
+`your-brand` and the address ends in **`.netlify.app`**. This launch flow does not offer custom-domain
 purchases or DNS setup. See Netlify's current
 [project naming guidance](https://docs.netlify.com/manage/projects/customize-project-name-and-cover-image/).
 
@@ -112,9 +120,13 @@ branding/metadata/assets, desktop/mobile layout, keyboard access, direct route
 loads and refreshes, and console/network errors. Check actual browser REST/CORS
 and WebSocket access separately when discovery permits. A working local proxy,
 an HTTP-only probe or a reachable page is not hosted access approval. Check
-WalletConnect pairing separately when configured, after checking the actual
-draft and production origins against the project's allowlist as described in
-[mobile wallet setup](../SKILL.md#guide-mobile-wallet-setup). Use an empty wallet
+WalletConnect pairing separately when already configured and reachable. Check
+actual draft/production origins against available allowlist records; if this
+requires a Reown login, leave that check pending and provide written origin-setup
+instructions instead of opening a wallet-account browser walkthrough. If no ID
+is configured, publish with it blank, mark pairing deferred and include the
+[written wallet follow-up](../SKILL.md#walletconnect-follow-up) at the end. Do not
+start a Reown account/browser walkthrough to complete a hosting check. Use an empty wallet
 for an optional connection test, or skip it. Do not sign messages/terms, approve tokens,
 trade, deposit or withdraw for a hosting check.
 
@@ -135,8 +147,16 @@ Use the supplied contact for the creator's handoff; do not ask the creator to
 verify team-only facts or message the team without authorization.
 
 At this source version, `fetchPartnerChains` is an explicitly temporary fixture
-for `global` only. Other requested partners remain unavailable until the real
-discovery integration and activation exist. Preserve that screen; static checks
-may be all that is possible. Record blocked checks instead of claiming success.
+for `global` only. Other requested partners return no active chains until the real
+discovery integration and activation exist. A validated empty chain response
+shows the branded UI read-only with a permanent coming-soon toast; it does not
+grant trading access. Its clock toast is permanent at the top right; the navbar
+chain selector and all wallet connection buttons are hidden. Explain this as an
+expected pending-activation state, not as a setup error or a missing WalletConnect
+ID. This happens automatically for local and built/hosted
+sites; use `npm run dev` for branding review without changing the requested ID.
+Verify the coming-soon state for an empty response or Retry for connection or
+validation errors.
+Record account/wallet/trading checks as blocked instead of claiming activation.
 Give the creator the final URL to add in the portal and send for team approval;
 saving a website there grants no access.
