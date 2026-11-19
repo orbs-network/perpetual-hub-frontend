@@ -56,7 +56,7 @@ export function RollupDetailPage() {
       <main className="p-6 max-w-7xl mx-auto">
         {error && (
           <div className="mb-6 p-4 bg-short/10 border border-short/30 rounded-lg">
-            <p className="text-sm text-short">{error}</p>
+            <p className="text-sm text-down">{error}</p>
           </div>
         )}
 

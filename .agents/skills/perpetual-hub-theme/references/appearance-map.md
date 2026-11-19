@@ -9,8 +9,14 @@ The source palette is `defaultPartner.theme` in `src/config/partners/default.ts`
 either a literal object or the result of `createTheme` in
 `src/config/partners/themeFromSeeds.ts`. The generator works in OKLCH. It derives
 surface levels from `background`, action colors from `accent`, and trading
-states from `long`/`short`. `checkThemeContrast` reports the main text and action
-pairs. The token table below applies to both.
+states from `long`/`short`. Filled trade-action foregrounds are derived against
+their fills independently of the green/red side-toggle text.
+`checkThemeContrast` reports selected text and action pairs, including semantic
+fills and hover. All checked pairs are required; this is not a complete
+rendered-interface accessibility audit. The literal default preserves existing
+visuals rather than serving as a contrast-compliance baseline. See
+[palette generation and preview](palette-preview.md) for thresholds and review.
+The token table below applies to both.
 `applyThemeColors` in `src/config/partners/index.ts` converts ordinary colors to
 space-separated RGB channels (`--color-base: 7 5 13`), which utilities in
 `tailwind.config.js` consume with opacity support. Some non-CSS consumers, such
@@ -20,14 +26,16 @@ as Lightweight Charts, read the original color strings directly.
 | --- | --- |
 | `base`, `surface`, `raised`, `hover`, `active` | App/page layers, panels, cards, menu surfaces and state backgrounds. Body uses `base`, and uses `surface` below the existing 1000px CSS breakpoint. `surface` luminance determines native light/dark color scheme and wallet/toast theme selection. `base` supplies runtime browser `theme-color`. |
 | `input-bg`, `tooltip-bg`, `modal-bg`, `badge-bg`, `tab-active`, `tab-inactive` | Input, tooltip, modal, badge and tab-specific surfaces; chart tooltip background also uses `tooltip-bg`. |
-| `content`, `content-secondary`, `content-muted`, `content-inverse` | Foreground hierarchy, secondary labels, muted/disabled information and text on filled actions. These also affect chart labels and wallet controls. |
+| `content`, `content-secondary`, `content-muted` | Foreground hierarchy, secondary labels and muted/disabled information. These also affect chart labels and wallet controls. |
+| `content-inverse` | Foreground on primary/accent fills, including normal/themed primary buttons and RainbowKit accent. Keep separate from semantic-fill foregrounds. |
+| `content-on-up`, `content-on-down`, `content-on-warning`, `content-on-long` | Generated foregrounds for positive, destructive and yellow buttons, the checked Radix switch (`up`) and explorer switch thumb (`long`). They are solved against their matching fills and supported hover states; one shared inverse color cannot cover all semantic actions. The literal default keeps these white to preserve existing visuals. |
 | `edge`, `edge-subtle` | Panel/control boundaries, separators, chart axes and chart grid. |
 | `button-primary`, `button-primary-hover` | Normal primary buttons; RainbowKit accent. These do not set every themed button fill. |
 | Raw `button-primary-bg`, `button-primary-bg-hover`, `button-primary-border`, `button-primary-disabled-bg`, `button-primary-disabled-border` | Complete CSS fills/borders for `themed` and `themedTradeLong` variants in `src/components/ui/button.tsx`, including header Connect. Coordinate with ordinary primary colors and foreground. |
 | `button-secondary`, `button-secondary-hover`, `button-secondary-border` | Secondary action states and themed secondary outlines. |
 | `long`, `long-hover`, `short`, `short-hover` | Trading side semantics, relevant action states and chart/order interactions. Preserve readable distinction between buy/long and sell/short. |
 | Raw `trade-long-active-bg`/`border`, `trade-short-active-bg`/`border`, `trade-side-inactive-bg`/`border`; `trade-side-long-text`, `trade-side-short-text`, `trade-long-text`, `trade-short-text` | Side-toggle active/inactive styling and action text. Inspect `src/components/trading-page/order-form/SideToggle.tsx` and button variants rather than assuming all order actions use the same fill. |
-| `up`, `up-light`, `down`, `down-light` | PnL/status distinction, chart candles/volume and trade markers. Separate from trading-action `long`/`short` even when their colors match. |
+| `up`, `up-light`, `down`, `down-light` | Readable profit/loss and Long/Short labels, PnL/status distinction, chart candles/volume and trade markers. Generated lightness is adjusted for neutral/tinted text backgrounds. Separate from trading-action `long`/`short` even when their colors match. |
 | `order-book-bid-depth`, `order-book-ask-depth` | Bid/ask depth fills. Check rows and values remain legible over the fills. |
 | `accent-primary`, `accent-secondary`, `accent-tertiary` | Accent surfaces/details, chart drawings and area line. Generated token-logo fallbacks also use `accent-primary` and `content-inverse`. |
 | `warning`, `link`, `focus`, `spinner`, `slider-active`, `selection` | Semantic warning, links, focus indication, loading, slider and selection states. |
@@ -66,6 +74,11 @@ overlay
 
 Raw values are inserted into their CSS properties directly. Use a value accepted
 by that property: a background can accept a gradient, while a border-color cannot.
+The contrast report composites supported raw `rgba(...)` fills over known app
+surfaces. For ordinary tokens it matches RGB conversion by ignoring embedded
+alpha, then handles known utility-opacity states separately. Custom backgrounds,
+component opacity and unsupported raw values need rendered checks; passing the
+report does not establish whole-app readability.
 
 ## Logo, name and metadata consumers
 

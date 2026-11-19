@@ -25,7 +25,7 @@ export function ToastContainer() {
             size={16}
             strokeWidth={2}
             fill="none"
-            style={{ color: 'rgb(var(--color-long))' }}
+            style={{ color: 'rgb(var(--color-up))' }}
           />
         ),
       }}

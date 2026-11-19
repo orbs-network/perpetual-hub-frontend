@@ -162,7 +162,7 @@ export function createIndicatorManager({ chart, getMainSeries, getBars, getTheme
   function colors(): string[] {
     const theme = getTheme();
     return [theme['accent-primary'], theme['accent-secondary'], theme.warning,
-      theme['accent-tertiary'], theme.long, theme.short, theme['content-secondary']];
+      theme['accent-tertiary'], theme.up, theme.down, theme['content-secondary']];
   }
 
   function getFigures(definition: IndicatorDefinition, params: number[]): IndicatorFigure[] {

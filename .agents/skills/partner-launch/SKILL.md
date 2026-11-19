@@ -1,6 +1,6 @@
 ---
 name: partner-launch
-description: Customize, check, publish or update a partner-owned dPERPS frontend from the official source, with durable local files and a separate trading-activation handoff. Use after cloning the repository from a partner launch brief.
+description: Onboard a dPERPS partner, collect branding preferences, preview and revise their app, then check, publish or update their own site. Use after cloning the official repository from a partner launch brief; keeps durable local files and a separate trading-activation handoff.
 ---
 
 # Launch a partner website
@@ -10,6 +10,40 @@ signing flows, exact numeric formats, translations and server authority. Do not
 scaffold a replacement. A launch request authorizes its own-account publication
 within the stated cost limits; this skill alone authorizes no deployment,
 purchase, commit, push or team message. API-only integrations do not need hosting.
+
+## One request covers branding and deployment
+
+Handle the launch end to end. Load the adjacent theme skill yourself; the partner
+does not need to invoke a second skill or manage the handoff. Reuse the brief,
+files and earlier answers. Ask once for missing branding preferences the partner
+has not delegated. On a new Netlify launch, include their preferred
+`name.netlify.app` address in that intake; updates retain the recorded URL. Use
+the documented defaults for omitted or delegated choices. Choose routine
+implementation, palette, build and hosting details yourself.
+
+Show the branded preview and allow adjustments as described below. If the
+partner explicitly asks you to choose and finish, keep the preview available
+and complete the authorized launch without waiting for design approval. Once
+the design is accepted or finalization is delegated and the checks pass, proceed
+through the hosted draft, production deployment and live verification. Do not
+ask again whether to deploy an already requested launch.
+
+Ask again only for information or action needed to proceed: a missing partner
+identity/source location, a taken or invalid requested Netlify name, an
+unresolved account/site ownership conflict,
+login/MFA in the partner's browser, their own wallet project ID for requested
+QR/mobile pairing, a design choice they reserved for review, or spending/DNS
+changes outside the authorized scope. Continue independent local
+work while such input is pending. Publication and trading activation remain
+separate.
+
+A partner who wants minimal interaction can use this request in the agent chat
+opened on their permanent checkout, together with their launch brief:
+
+> Use partner-launch to brand and deploy my app. Use my supplied logo and
+> preferences, choose sensible defaults for anything missing, and make technical
+> decisions yourself. You may finalize the design without another approval.
+> Use free hosting; ask before spending money.
 
 ## Read the brief and current code
 
@@ -23,7 +57,8 @@ replacement command, variable or discovery endpoint to make an old brief work.
 Use the exact permanent folder in the brief. Reuse its customized official
 checkout; preserve local changes, Git metadata and unrelated files. Do not scan
 the disk, reset, reinitialize Git or work in a temporary chat folder. For updates,
-read `DEPLOYMENT.md` first; if the customized folder is missing, ask for its
+read `DEPLOYMENT.md` and [the backup procedure](references/deployment-record.md)
+first; back up before edits. If the customized folder is missing, ask for its
 backup/notes rather than silently starting a new app or hosting site.
 
 Stay on the branch already checked out in the permanent folder. Do not create or
@@ -58,38 +93,117 @@ unavailability. Never copy private or machine-wide configuration into this repo.
 
 All `VITE_` values become public browser assets. The optional WalletConnect/Reown
 project ID must belong to this partner; it is a public project ID, not a secret.
-If absent, explicitly leave it blank and report QR/mobile pairing as pending;
-do not retain another app's ID. Check shell/mode-file precedence without dumping
-the environment. Restart development and rebuild after changing build settings.
+If absent, guide setup below; if skipped or unavailable, explicitly leave it
+blank and report QR/mobile pairing as pending. Do not retain another app's ID.
+Check shell/mode-file precedence without dumping the environment. Restart
+development and rebuild after changing build settings.
 API/WS endpoints currently come from source, not extra invented env variables.
 Keep passwords, tokens, keys, seed phrases and onboarding signatures/proofs out
 of chat, code, commits, build output, notes and backups. Real environment files
 and provider login state stay local and ignored.
 
-## Brand the app
+## Guide mobile wallet setup
 
-Finish branding before the first draft build, so the partner's first preview
-already looks like their site. Follow the
-[`perpetual-hub-theme` skill](../perpetual-hub-theme/SKILL.md) for every
-appearance change; this skill decides only when branding happens.
+When a new launch has no WalletConnect project ID, raise it with the first
+missing-input questions and explain: “To offer QR codes and links that open
+visitors' mobile wallet apps, we need a project ID from your own Reown account.
+I'll walk you through getting it and handle the app settings. Installed browser
+wallets such as MetaMask still work if you skip this.” Do not just ask a nontechnical
+partner to supply an unexplained ID. Reuse this app's partner-owned project on
+updates rather than making them create another one.
 
-1. Confirm the UI name and use the logo file dragged into chat or its supplied
-   local path. For colors, ask only for a brand color and a dark or light page,
-   preferring exact hex values from a brand guide and otherwise suggesting both
-   from the logo. Give two or three local preview links of generated options so
-   the partner can click through the real app and pick one (the theme skill's
-   seed colors and preview links). Offer text-only branding with the
-   default palette when there is no logo or no colors. Portal defaults are not
-   confirmed branding.
-2. Copy agreed assets into `public/` and apply the name, colors, logo, favicon and
-   metadata through the theme skill. Keep identity (`VITE_PARTNER`) separate from
-   appearance.
-3. Check the branded app locally on desktop and mobile before publishing.
-4. Record the choices, theme seed colors and original/copied asset paths in
-   `DEPLOYMENT.md`.
+Guide the partner in small steps, using the current official interface:
 
-Later restyles use the theme skill on its own, then rerun the checks and
-redeploy to the same recorded site; they do not need a full launch.
+1. Open [Reown Dashboard](https://dashboard.reown.com/) in their browser. Let
+   them sign up or sign in and complete any email/MFA steps themselves. Verify
+   the current free option and limits against [pricing](https://reown.com/pricing)
+   and their account; ask before any paid plan or charge.
+2. In their own team/account, create a project named after their app. The
+   [official walkthrough](https://reown.com/blog/how-reown-analytics-helps-onchain-teams-grow-faster-and-smarter)
+   uses **+ Project → AppKit → app name → Create**; follow current labels if
+   these change. This obtains an ID for the existing RainbowKit integration;
+   keep the app's current wallet libraries and configuration.
+3. Open the project and copy the value labelled **Project ID**. Ask them to
+   share that public ID, or read it from the authorized browser. Explain that
+   it is different from their dPERPS partner ID and needs no wallet recovery
+   phrase, private key or account password.
+4. Set `VITE_WALLETCONNECT_PROJECT_ID` in ignored `.env.local` yourself, check
+   precedence, restart the preview and rebuild before uploading. The partner
+   should not need to edit files or run commands.
+5. Once the actual draft and stable site URLs exist, guide the partner through
+   the project's allowed-domain/origin settings using the
+   [relay guide](https://docs.reown.com/cloud/relay). Supply the exact website
+   origins yourself (scheme and host, plus port if present, without a path).
+   Include each draft and production origin used for pairing; retain
+   needed existing entries on updates. Localhost and `127.0.0.1` are permitted
+   by the relay; allowlist changes can take 15 minutes to apply.
+6. Check the WalletConnect QR/mobile options locally and on the hosted site;
+   distinguish a visible option from a successful real pairing. Follow the
+   connection-only checks in [hosting-and-activation.md](references/hosting-and-activation.md).
+   Record setup and pairing as passed, pending or blocked, including when
+   partner discovery prevents reaching the wallet UI.
+
+If signup or a reply is pending, continue independent branding/build work. If
+the partner skips setup, continue the launch with an explicitly blank ID and
+state the browser-wallet-only limitation. Never substitute a demo/shared ID or
+claim QR/mobile pairing passed without checking it.
+
+## Brand, preview and revise
+
+For a new launch, finish this review before the first hosted draft build. For an
+update, reuse accepted branding from `DEPLOYMENT.md` and ask only about requested
+changes. Follow the
+[`perpetual-hub-theme` skill](../perpetual-hub-theme/SKILL.md) for palette generation,
+assets, contrast checks and local preview mechanics.
+
+1. Reuse information in the brief and ask together for missing preferences the
+   partner has not delegated, in plain words. For example: “What name should appear in the app? Please attach
+   your logo or give its local file path (text-only is fine). What is your primary
+   brand color or brand-guide hex, if you have one? Do you prefer a dark or light
+   theme? What address would you like, such as `your-brand.netlify.app`? The
+   address must end in `.netlify.app`; I can also use a generated name. I can
+   choose sensible defaults for the design.” Explain that they choose the part
+   before `.netlify.app`, not a domain to buy. Reuse a supplied address or explicit
+   delegation instead of asking again. Do not ask for individual theme tokens.
+   Portal defaults are not confirmed branding.
+2. If colors are omitted or delegated, take a suitable primary color from the
+   supplied logo, identifying it as approximate, or use `#6675f7`. Use the chosen
+   mode, with dark as the default when the partner has no preference. The theme
+   skill supplies the background defaults and derives the complete palette;
+   retain recognizable green Long/profit and red Short/loss colors. Say which
+   choices were supplied and which were inferred or defaulted. Missing colors
+   or a logo must not stall a preview; offer text-only branding when no logo is
+   available, and do not invent a partner logo.
+3. Copy supplied assets into `public/` and apply the actual name, logo, favicon
+   and metadata locally through the theme skill before showing the app. Keep
+   identity (`VITE_PARTNER`) separate from appearance. Use generated palettes
+   through the shared theme configuration, not per-component color edits.
+4. Generate a working local preview of the branded application, with the actual
+   name/logo on reachable screens and proposed palette. Check desktop and mobile
+   yourself. Share the local app link and screenshots when local links cannot be opened; color
+   swatches alone are not an application preview. One coherent proposal is
+   enough unless useful alternatives remain open. Preserve the requested ID
+   and genuine unavailable-discovery screen; explain when that prevents a full
+   trading-screen preview. The current unavailable bootstrap also hides the
+   app header/name/logo, so record in-app logo and header/drawer checks as
+   blocked; an asset shown separately is not that review. Do not substitute
+   `global` or mocked market/account data to make a prettier preview.
+5. Invite adjustments before finalizing: “Here is your branded preview. Would
+   you like changes to the logo, primary color, or dark/light theme, or should I
+   use this version?” Apply requested changes, rerun contrast/visual checks and
+   show the revised preview until accepted. Leave the preview ready while the
+   reply is pending; silence is not acceptance. An explicit instruction to choose
+   defaults and finish, or to skip review, permits completing the authorized
+   work without another approval. A general launch/publication request alone
+   does not select an unseen design.
+6. Persist the chosen generated palette, reset temporary preview colors and
+   verify the configured result. Record the choices, supplied/defaulted inputs,
+   final theme seed colors, asset paths and review outcome in `DEPLOYMENT.md`
+   using [references/deployment-record.md](references/deployment-record.md).
+
+Later restyles use the theme skill on its own, then rerun the checks and the
+publication procedure for the same recorded site and URL; do not repeat URL
+selection on an update unless the partner requests a rename.
 
 ## Check and publish
 
@@ -108,128 +222,22 @@ Fix/report failed checks before publishing. Do not change partner identity to
 make a check pass. The current app has no automated test suite; these checks
 do not establish financial correctness or trading activation.
 
-Handle hosting without requiring the creator to pick a provider. Reuse the
-verified account/site in `DEPLOYMENT.md` or the local provider link. Resolve
-conflicting/stale links with the user before upload. Create a new site only
-when no intended site exists. Guide signup, passwords, login and MFA through
-the user's own browser; never create credentials for them or request tokens in
-chat. No GitHub account, fork, source push or continuous deployment is required.
+For authorized hosting work, read
+[references/hosting-and-activation.md](references/hosting-and-activation.md) before
+setting up an account/site, uploading a draft or publishing. It owns current-plan
+verification, Netlify name availability and selection, static SPA setup, the
+draft/live checks and separate activation
+handoff. Keep publication pending when authorization or required checks are
+missing; local branding review needs no deployment.
 
-Default to Netlify's free option only if it fits **the current account and terms**.
-At every launch/update, read [current pricing](https://www.netlify.com/pricing/)
-and linked usage/terms documentation; inspect the account's actual plan, including
-legacy plans. Explain commercial-use eligibility, deployment/traffic consumption,
-pauses, overages, recharge and upgrade triggers in plain words. Record the date,
-source links and decision in `DEPLOYMENT.md`. Do not rely on remembered prices
-or fixed quotas in this file. If pricing cannot be verified, prepare locally and
-report publication pending. Ask before spending, upgrades, auto-recharge, paid
-features, DNS changes or a paid alternative.
+## Record and hand off
 
-Before the final build, preserve existing `public/_redirects` rules and add this
-SPA catch-all **last**, without forcing rewrites of real assets:
-
-```text
-/* /index.html 200
-```
-
-Verify the rule exists in `dist/_redirects`. Read the current
-[Netlify CLI guide](https://docs.netlify.com/api-and-cli-guides/cli-guides/get-started-with-cli/)
-and [deploy flags](https://cli.netlify.com/commands/deploy/). Inspect account/team,
-site ownership, `netlify status` and the linked site ID. Provider state such as
-`.netlify/` must be ignored. Check local provider configuration for unintended
-functions/plugins; this is a static `dist/` upload. Use the verified ID in both
-commands below, replacing the placeholder before running:
-
-```sh
-netlify deploy --dir=dist --no-build --site <verified-site-id>
-# Check the draft before publishing the same reviewed build to the same site.
-netlify deploy --dir=dist --no-build --site <verified-site-id> --prod
-```
-
-Do not upload source, real env files or dependencies. If the build changes after
-draft checks, repeat those checks before production. Return the stable site URL,
-not just the deploy-specific draft URL. Dashboard env edits do not alter an
-already built upload; rebuild with the intended values.
-
-**Never run `npm run deploy` or `scripts/deploy.mjs` for a partner:** its fixed
-Orbs project is not the creator's target.
-Use Vercel only if the creator already has a paid account; verify current pricing and their project, follow its current CLI guide and `vercel.json`, and run `vercel logout` after success or failure.
-
-## Verify the actual website and activation separately
-
-Check the draft and stable production origin in a browser: HTTPS, intended
-branding/metadata/assets, desktop/mobile layout, keyboard access, direct route
-loads and refreshes, and console/network errors. Check actual browser REST/CORS
-and WebSocket access separately when discovery permits. A working local proxy,
-an HTTP-only probe or a reachable page is not hosted access approval. Check
-WalletConnect pairing separately when configured. Use an empty wallet for an
-optional connection test, or skip it. Do not sign messages/terms, approve tokens,
-trade, deposit or withdraw for a hosting check.
-
-Track these states independently:
-
-- **Website published: URL** only after verifying the stable production site.
-  Otherwise say draft ready, not published, or publication pending.
-- **Trading activation pending** until the team confirms the assigned partner
-  ID, enabled networks and authoritative discovery/configuration, approves the
-  exact published browser origin for REST/CORS and WebSockets, and applicable
-  live connectivity checks pass. Record each unresolved item.
-
-Query the exact registry-check URL from the brief, if provided, without inventing
-an endpoint. A response marked `mock: true` is informational even when enabled;
-it confirms neither assignment nor real activation. Missing/unreachable/disabled
-status or a placeholder contact must not stall customization, build or preview.
-Use the supplied contact for the creator's handoff; do not ask the creator to
-verify team-only facts or message the team without authorization.
-
-At this source version, `fetchPartnerChains` is an explicitly temporary fixture
-for `global` only. Other requested partners remain unavailable until the real
-discovery integration and activation exist. Preserve that screen; static checks
-may be all that is possible. Record blocked checks instead of claiming success.
-Give the creator the final URL to add in the portal and send for team approval;
-saving a website there grants no access.
-
-## Durable record and future updates
-
-Keep customized source in the permanent folder. Create a private source backup
-before updates and after launch at
-`~/Documents/dPERPS/backups/<folder-name>-source-YYYYMMDD-HHmm.tar.gz` (or the user's
-authorized private destination). Exclude real env files, credentials/proofs,
-`.git`, provider/session state, `node_modules` and build output. Retain the
-lockfile, public `.env.example`, licenses and all local customizations. Do not
-upload this backup to a new service without authorization.
-
-Write private, ignored **`DEPLOYMENT.md` in the project root** using this format.
-Replace descriptions with actual values; record configured status, never secrets:
-
-```markdown
-# Deployment
-- Project / requested and confirmed Partner ID / requested networks:
-- Permanent source folder / upstream repository and exact commit / local changes:
-- Tool versions and paths:
-- Branding choices and original/copied asset paths:
-- Provider / account and team / verified site ID / stable production URL:
-- Last draft URL / deployment ID and date:
-- Pricing checked at / official sources / actual plan and spending decision:
-- Public build variables: names and configured/blank status only:
-- Checks: source/type/lint/build; draft/live HTTPS/assets/routes/mobile/keyboard:
-- Browser REST/CORS / WebSocket / WalletConnect: passed, pending or blocked + why:
-- Website published: URL or pending reason:
-- Trading activation pending: team contact, assignment/discovery/network/origin tasks:
-- Private backup path and date:
-
-## Next update
-Update my dPERPS app in <actual-permanent-folder>. Read AGENTS.md,
-.agents/skills/partner-launch/SKILL.md and DEPLOYMENT.md. Back up my source,
-preserve my branding, run the checks and redeploy to the same recorded site and
-stable URL. Report the link and remaining team work.
-```
-
-Future explicit updates reuse this source and verified site; do not create a new
-one or automatically pull upstream. Review requested upstream changes, preserve
-customizations, back up first, rerun checks and the draft/live sequence. Update
-the notes and source changelog. If build scripts, Node requirements, env settings,
-discovery or hosting procedure change, update this skill in the **same change**.
+Read [references/deployment-record.md](references/deployment-record.md) for the
+private backup procedure, ignored `DEPLOYMENT.md` format and same-site updates.
+Back up customized source before an update and after launch. Keep publication
+and trading activation separate; record blocked checks rather than claiming
+success. If build scripts, Node requirements, env settings, discovery or hosting
+procedure change, update this skill and relevant references in the same change.
 
 Finish in plain language: “Here's your link”, “Here's where your files and backup
 are”, and “Here's what still needs the team”. Include the actual future-update

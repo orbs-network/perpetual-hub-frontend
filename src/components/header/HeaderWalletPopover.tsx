@@ -66,7 +66,7 @@ export function HeaderWalletPopover({
           onClick={() => {
             void logout();
           }}
-          className="h-auto w-full justify-start rounded px-2 py-1.5 text-left text-[12px] font-normal text-short hover:text-short"
+          className="h-auto w-full justify-start rounded px-2 py-1.5 text-left text-[12px] font-normal text-down hover:text-down"
         >
           <LogOut size={12} />
           {isDisconnecting ? t("Disconnecting…") : t("wallet.disconnect")}

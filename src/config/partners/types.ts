@@ -93,6 +93,10 @@ export interface ThemeColors {
   'content-secondary': string;
   'content-muted': string;
   'content-inverse': string;
+  'content-on-up': string;
+  'content-on-down': string;
+  'content-on-warning': string;
+  'content-on-long': string;
 
   // Shadows (not RGB-converted — used directly as box-shadow values)
   'shadow-card': string;

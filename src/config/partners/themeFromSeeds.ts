@@ -108,19 +108,68 @@ function contrast(a: [number, number, number], b: [number, number, number]) {
   return (high + 0.05) / (low + 0.05);
 }
 
-/** Move a color's lightness away from the background until it reaches `ratio`. */
-function withContrast(color: Oklch, background: Oklch, ratio: number): Oklch {
-  const backgroundRgb = oklchToRgb(background);
-  const step = background.l > 0.6 ? -0.01 : 0.01;
-  let candidate = color;
-  for (let i = 0; i < 100; i += 1) {
-    if (contrast(oklchToRgb(candidate), backgroundRgb) >= ratio) return candidate;
-    const next = candidate.l + step;
-    if (next < 0 || next > 1) return candidate;
-    candidate = { ...candidate, l: next };
-  }
-  return candidate;
+/** CSS alpha compositing happens in encoded sRGB before contrast is measured. */
+function composite(
+  foreground: [number, number, number],
+  alpha: number,
+  background: [number, number, number],
+): [number, number, number] {
+  return foreground.map((channel, index) => channel * alpha + background[index] * (1 - alpha)) as [number, number, number];
 }
+
+/** Balance a semantic label/fill and its own foreground across tinted states. */
+function semanticColors(color: Oklch, backgrounds: Oklch[], tintAlpha: number, hoverAlpha: number) {
+  const backdropRgbs = backgrounds.map(oklchToRgb);
+  const foregrounds: Array<[number, number, number]> = [[0, 0, 0], [255, 255, 255]];
+  let best = { color, foreground: '#000000' };
+  let bestRatio = 0;
+  for (let distance = 0; distance <= 200; distance += 1) {
+    for (const direction of [-1, 1]) {
+      const candidate = { ...color, l: Math.min(1, Math.max(0, color.l + direction * distance / 200)) };
+      const rgb = oklchToRgb(candidate);
+      const labelRatio = Math.min(...backdropRgbs.flatMap((background) => [
+        contrast(rgb, background), contrast(rgb, composite(rgb, tintAlpha, background)),
+      ]));
+      const fillBackgrounds = [rgb, ...backdropRgbs.map((background) => composite(rgb, hoverAlpha, background))];
+      const fillRatios = foregrounds.map((foreground) =>
+        Math.min(...fillBackgrounds.map((background) => contrast(foreground, background))));
+      const foregroundIndex = fillRatios[0] >= fillRatios[1] ? 0 : 1;
+      const minimum = Math.min(labelRatio, fillRatios[foregroundIndex]);
+      const result = { color: candidate, foreground: toHex(foregrounds[foregroundIndex]) };
+      if (minimum >= 4.5) return result;
+      if (minimum > bestRatio) {
+        best = result;
+        bestRatio = minimum;
+      }
+    }
+  }
+  return best;
+}
+
+/** Keep hue, finding nearby lightness readable on every supplied background. */
+function withContrastOn(color: Oklch, backgrounds: Oklch[], ratio: number): Oklch {
+  const backgroundRgbs = backgrounds.map(oklchToRgb);
+  let best = color;
+  let bestRatio = 0;
+  for (let distance = 0; distance <= 100; distance += 1) {
+    for (const direction of [-1, 1]) {
+      const candidate = { ...color, l: Math.min(1, Math.max(0, color.l + direction * distance / 100)) };
+      const candidateRgb = oklchToRgb(candidate);
+      const minimum = Math.min(...backgroundRgbs.map((background) => contrast(candidateRgb, background)));
+      if (minimum >= ratio) return candidate;
+      if (minimum > bestRatio) {
+        best = candidate;
+        bestRatio = minimum;
+      }
+    }
+  }
+  // An unusual seed/override can make a shared foreground impossible. Keep the
+  // best candidate and let checkThemeContrast report the unresolved pairs.
+  return best;
+}
+
+const withContrast = (color: Oklch, background: Oklch, ratio: number) =>
+  withContrastOn(color, [background], ratio);
 
 /** Interpolate in OKLab, so mixes keep a natural hue. */
 function mix(from: Oklch, to: Oklch, amount: number): Oklch {
@@ -181,48 +230,67 @@ export function createTheme(seeds: ThemeSeeds, overrides: Partial<ThemeColors> =
   };
   const layer = (step: number) => hex(elevate(step));
 
-  const content: Oklch = isLight
+  const textBackgrounds = [background, ...[
+    ELEVATION.inputBg, ELEVATION.surface, ELEVATION.modalBg, ELEVATION.raised,
+    ELEVATION.tabActive, ELEVATION.hover, ELEVATION.edge, ELEVATION.active,
+  ].map(elevate)];
+  const readableText = (color: Oklch) => withContrastOn(color, textBackgrounds, 4.5);
+
+  const content: Oklch = readableText(isLight
     ? { l: 0.21, c: Math.min(background.c * 1.5, 0.02), h: background.h }
-    : { l: 0.967, c: Math.min(background.c * 0.35, 0.01), h: background.h };
-  const contentSecondary = withContrast(
+    : { l: 0.967, c: Math.min(background.c * 0.35, 0.01), h: background.h });
+  const contentSecondary = readableText(
     isLight
       ? { l: 0.5, c: Math.min(background.c * 2, 0.03), h: background.h }
       : { l: 0.648, c: Math.min(background.c * 1.35, 0.03), h: background.h },
-    background,
-    4.5,
   );
 
   const white: [number, number, number] = [255, 255, 255];
+  const black: [number, number, number] = [0, 0, 0];
   const accentRgb = oklchToRgb(accent);
-  // Text on accent fills: white unless it falls below the large-text threshold.
-  const onAccent = contrast(white, accentRgb) >= 3 ? '#ffffff' : hex({ l: 0.18, c: 0.01, h: accent.h });
-
-  const accentHover = isLight ? shift(accent, -0.05, 0.98) : shift(accent, 0.041, 0.95, 1);
-  const link = withContrast(isLight ? shift(accent, -0.04) : shift(accent, 0.055, 0.9, 2), background, 4.5);
-  const focus = withContrast(link, background, 3);
+  const fillForeground = (fill: Oklch): Oklch => ({
+    l: contrast(white, oklchToRgb(fill)) >= contrast(black, oklchToRgb(fill)) ? 1 : 0,
+    c: 0,
+    h: fill.h,
+  });
+  // Ordinary action labels need 4.5:1. Adjust the hover fill if necessary,
+  // keeping the exact brand accent and a common foreground for both states.
+  const onAccent = fillForeground(accent);
+  const accentHover = withContrast(
+    isLight ? shift(accent, -0.05, 0.98) : shift(accent, 0.041, 0.95, 1), onAccent, 4.5,
+  );
+  const link = readableText(isLight ? shift(accent, -0.04) : shift(accent, 0.055, 0.9, 2));
+  const focus = withContrastOn(link, textBackgrounds, 3);
 
   // Calibrated on the default green/red: red reads stronger, so it gets
   // a lighter text step and a weaker tint in the side toggle. The text must
   // stay readable on that toggle's active background.
   const sideText = (color: Oklch, side: 'long' | 'short') => {
     const darkStep = side === 'long' ? shift(color, 0.045, 1.03, 1) : shift(color, 0.06, 0.92);
-    const text = withContrast(isLight ? shift(color, -0.06, 1.02) : darkStep, background, 3);
-    return hex(withContrast(text, activeTint(color, side), 3));
+    return hex(withContrastOn(isLight ? shift(color, -0.06, 1.02) : darkStep,
+      [elevate(ELEVATION.raised), activeTint(color, side)], 4.5));
   };
   const lighter = (color: Oklch) =>
-    hex(withContrast(isLight ? shift(color, -0.08) : shift(color, 0.067, 0.98, 1), background, 3));
+    hex(readableText(isLight ? shift(color, -0.08) : shift(color, 0.067, 0.98, 1)));
   const activeTint = (color: Oklch, side: 'long' | 'short') =>
     mix(background, color, isLight ? 0.16 : side === 'long' ? 0.39 : 0.27);
-  const sideHover = (color: Oklch) => hex(isLight ? shift(color, -0.045, 1.02) : shift(color, 0.045, 1.03, 1));
+  const sideHover = (color: Oklch) => withContrast(
+    isLight ? shift(color, -0.045, 1.02) : shift(color, 0.045, 1.03, 1), fillForeground(color), 4.5,
+  );
+  const shortHover = sideHover(short);
 
   const activeBg = (color: Oklch, side: 'long' | 'short') => hex(activeTint(color, side));
   const activeBorder = (color: Oklch, side: 'long' | 'short') =>
     hex(mix(background, color, isLight ? 0.4 : side === 'long' ? 0.52 : 0.45));
 
-  // Profit, loss and warning are also read as text, so keep them legible.
-  const up = withContrast(long, background, 3);
-  const down = withContrast(short, background, 3);
-  const warningText = withContrast(warning, background, 3);
+  // Semantic colors are text on neutral/tinted surfaces and action fills with
+  // independent text. Account for their existing 80/90% hover backgrounds too.
+  const upColors = semanticColors(long, textBackgrounds, 0.2, 0.8);
+  const downColors = semanticColors(short, textBackgrounds, 0.2, 0.9);
+  const warningColors = semanticColors(warning, textBackgrounds, 0.3, 0.8);
+  const up = upColors.color;
+  const down = downColors.color;
+  const warningText = warningColors.color;
 
   const overlayRgb = isLight
     ? oklchToRgb({ l: 0.15, c: background.c, h: background.h })
@@ -245,13 +313,13 @@ export function createTheme(seeds: ThemeSeeds, overrides: Partial<ThemeColors> =
     scrollbar: layer(ELEVATION.scrollbar),
     'scrollbar-hover': layer(ELEVATION.scrollbarHover),
 
-    edge: layer(ELEVATION.edge),
+    edge: hex(withContrast(elevate(ELEVATION.edge), background, 1.15)),
     'edge-subtle': layer(ELEVATION.edgeSubtle),
 
     long: hex(long),
-    'long-hover': sideHover(long),
+    'long-hover': hex(sideHover(long)),
     short: hex(short),
-    'short-hover': sideHover(short),
+    'short-hover': hex(shortHover),
     'order-book-bid-depth': hex(long),
     'order-book-ask-depth': hex(short),
 
@@ -280,10 +348,10 @@ export function createTheme(seeds: ThemeSeeds, overrides: Partial<ThemeColors> =
     'button-secondary-border': layer(ELEVATION.secondaryBorder),
     'trade-long-active-bg': activeBg(long, 'long'),
     'trade-long-active-border': activeBorder(long, 'long'),
-    'trade-long-text': sideText(long, 'long'),
+    'trade-long-text': hex(withContrastOn(long, [accent, accentHover], 4.5)),
     'trade-short-active-bg': activeBg(short, 'short'),
     'trade-short-active-border': activeBorder(short, 'short'),
-    'trade-short-text': sideText(short, 'short'),
+    'trade-short-text': hex(withContrastOn(short, [short, shortHover], 4.5)),
     'trade-side-inactive-bg': layer(ELEVATION.raised),
     'trade-side-inactive-border': layer(ELEVATION.edge),
     'trade-side-long-text': sideText(long, 'long'),
@@ -300,7 +368,11 @@ export function createTheme(seeds: ThemeSeeds, overrides: Partial<ThemeColors> =
     content: hex(content),
     'content-secondary': hex(contentSecondary),
     'content-muted': rgba(contentRgb, isLight ? 0.45 : 0.38),
-    'content-inverse': onAccent,
+    'content-inverse': hex(onAccent),
+    'content-on-up': upColors.foreground,
+    'content-on-down': downColors.foreground,
+    'content-on-warning': warningColors.foreground,
+    'content-on-long': hex(fillForeground(long)),
 
     'shadow-card': isLight
       ? '0 1px 0 rgba(0, 0, 0, 0.03), 0 10px 28px rgba(0, 0, 0, 0.08)'
@@ -317,47 +389,91 @@ export interface ThemeContrastCheck {
   ratio: number;
   minimum: number;
   passes: boolean;
-  /**
-   * Advisory pairs report white/dark text on the buy/sell/warning fills. The
-   * default palette already falls short there, so they inform, not block.
-   */
-  advisory: boolean;
 }
 
 /** Contrast of the main text and action pairs, for reviewing a generated theme. */
 export function checkThemeContrast(theme: ThemeColors): ThemeContrastCheck[] {
-  const rgbOf = (value: string, field: string) => {
-    if (HEX_PATTERN.test(value)) return parseHex(value, field);
-    const channels = value.match(/[\d.]+/g)?.slice(0, 3).map(Number);
-    if (!channels || channels.length < 3) throw new Error(`Cannot read color "${field}": ${value}`);
-    return channels as [number, number, number];
+  const colorOf = (value: string, field: string, raw: boolean) => {
+    if (HEX_PATTERN.test(value)) return { rgb: parseHex(value, field), alpha: 1 };
+    const css = value.trim().match(/^rgba?\(([^()]*)\)$/i);
+    const channels = css?.[1].trim().split(/[\s,/]+/);
+    if (!channels || (channels.length !== 3 && channels.length !== 4)
+      || channels.some((channel) => !/^[+-]?(?:\d+\.?\d*|\.\d+)%?$/.test(channel))) {
+      throw new Error(`Cannot read color "${field}": ${value}. Use six-digit hex or rgb()/rgba().`);
+    }
+    const renderedChannels = raw ? channels.slice(0, 3) : value.match(/[\d.]+/g)!.slice(0, 3);
+    const rgb = renderedChannels.map((channel) => {
+      // Ordinary variables use index.ts's RGB conversion, which drops alpha
+      // and reads percent numerals as channel values. RAW fills retain CSS alpha.
+      const scale = raw && channel.endsWith('%') ? 2.55 : 1;
+      return Math.min(255, Math.max(0, parseFloat(channel) * scale));
+    }) as [number, number, number];
+    const alpha = raw && channels[3] !== undefined
+      ? Math.min(1, Math.max(0, parseFloat(channels[3]) / (channels[3].endsWith('%') ? 100 : 1)))
+      : 1;
+    return { rgb, alpha };
   };
-  const pairs: Array<[keyof ThemeColors, keyof ThemeColors, number, boolean?]> = [
-    ['content', 'base', 7],
-    ['content', 'raised', 4.5],
-    ['content-secondary', 'base', 4.5],
-    ['content-secondary', 'raised', 3],
-    ['link', 'base', 4.5],
-    ['focus', 'base', 3],
-    ['content-inverse', 'button-primary', 3],
-    ['trade-side-long-text', 'trade-long-active-bg', 3],
-    ['trade-side-short-text', 'trade-short-active-bg', 3],
-    ['up', 'base', 3],
-    ['down', 'base', 3],
-    ['warning', 'base', 3],
-    ['edge', 'base', 1.15],
-    ['content-inverse', 'up', 3, true],
-    ['content-inverse', 'down', 3, true],
-    ['content-inverse', 'warning', 3, true],
+  const backgrounds: Array<keyof ThemeColors> = [
+    'base', 'surface', 'raised', 'hover', 'active', 'input-bg', 'tooltip-bg',
+    'modal-bg', 'badge-bg', 'tab-active', 'tab-inactive', 'button-secondary', 'button-secondary-hover',
   ];
-  return pairs.map(([foreground, background, minimum, advisory = false]) => {
-    const ratio = contrast(rgbOf(theme[foreground], foreground), rgbOf(theme[background], background));
+  const textTokens: Array<keyof ThemeColors> = [
+    'content', 'content-secondary', 'link', 'up', 'up-light', 'down', 'down-light', 'warning',
+  ];
+  const pairs: Array<[keyof ThemeColors, keyof ThemeColors, number]> = [
+    ...textTokens.flatMap((foreground) => backgrounds.map((background):
+      [keyof ThemeColors, keyof ThemeColors, number] => [foreground, background, 4.5])),
+    ...backgrounds.map((background): [keyof ThemeColors, keyof ThemeColors, number] => ['focus', background, 3]),
+    ['content-inverse', 'button-primary', 4.5],
+    ['content-inverse', 'button-primary-hover', 4.5],
+    ['content-inverse', 'button-primary-bg', 4.5],
+    ['content-inverse', 'button-primary-bg-hover', 4.5],
+    ['trade-long-text', 'button-primary', 4.5],
+    ['trade-long-text', 'button-primary-hover', 4.5],
+    ['trade-long-text', 'button-primary-bg', 4.5],
+    ['trade-long-text', 'button-primary-bg-hover', 4.5],
+    ['trade-short-text', 'short', 4.5],
+    ['trade-short-text', 'short-hover', 4.5],
+    ['trade-side-long-text', 'trade-long-active-bg', 4.5],
+    ['trade-side-long-text', 'trade-side-inactive-bg', 4.5],
+    ['trade-side-short-text', 'trade-short-active-bg', 4.5],
+    ['trade-side-short-text', 'trade-side-inactive-bg', 4.5],
+    ['content-on-up', 'up', 4.5],
+    ['content-on-down', 'down', 4.5],
+    ['content-on-warning', 'warning', 4.5],
+    ['content-on-long', 'long', 4.5],
+    ['content-on-long', 'long-hover', 4.5],
+    // Decorative panel separation; this is not a WCAG control-boundary check.
+    ['edge', 'base', 1.15],
+  ];
+  const rawFills = new Set<keyof ThemeColors>([
+    'button-primary-bg', 'button-primary-bg-hover', 'trade-long-active-bg',
+    'trade-short-active-bg', 'trade-side-inactive-bg',
+  ]);
+  const backdropColors = backgrounds.map((key) => ({ key, rgb: colorOf(theme[key], key, false).rgb }));
+  const measure = (foreground: keyof ThemeColors, background: keyof ThemeColors, minimum: number, opacity = 1): ThemeContrastCheck => {
+    const text = colorOf(theme[foreground], foreground, false).rgb;
+    const fill = colorOf(theme[background], background, rawFills.has(background));
+    const alpha = fill.alpha * opacity;
+    const candidates = alpha === 1 ? [{ key: background, rgb: fill.rgb }]
+      : backdropColors.map(({ key, rgb }) => ({ key, rgb: composite(fill.rgb, alpha, rgb) }));
+    const worst = candidates.reduce((lowest, candidate) =>
+      contrast(text, candidate.rgb) < contrast(text, lowest.rgb) ? candidate : lowest);
+    const ratio = contrast(text, worst.rgb);
     return {
-      pair: `${foreground} on ${background}`,
+      pair: `${foreground} on ${background}${opacity === 1 ? '' : `/${opacity * 100}`}${alpha === 1 ? '' : ` over ${worst.key}`}`,
       ratio: Math.round(ratio * 100) / 100,
       minimum,
       passes: ratio >= minimum,
-      advisory,
     };
-  });
+  };
+  const checks = pairs.map(([foreground, background, minimum]) => measure(foreground, background, minimum));
+  for (const [foreground, background, opacity] of [
+    ['content-on-up', 'up', 0.8], ['content-on-down', 'down', 0.9], ['content-on-warning', 'warning', 0.8],
+  ] as const) checks.push(measure(foreground, background, 4.5, opacity));
+  for (const semantic of ['up', 'down', 'warning'] as const) {
+    const opacities = semantic === 'warning' ? [0.1, 0.15, 0.2, 0.3] : [0.05, 0.1, 0.15, 0.2];
+    for (const opacity of opacities) checks.push(measure(semantic, semantic, 4.5, opacity));
+  }
+  return checks;
 }

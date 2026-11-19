@@ -11,6 +11,7 @@ import { formatExplorerTimestamp, truncateHash } from '@/components/explorer/uti
 import { useTranslation } from "@/hooks/useSafeTranslation";
 import { appRoutes } from "@/routes";
 import { PageHeader } from "@/components/PageHeader";
+import { Switch } from "@/components/ui/switch";
 
 export function RollupExplorerPage() {
   const { t } = useTranslation();
@@ -65,15 +66,13 @@ export function RollupExplorerPage() {
           action={
             <div className="flex flex-wrap items-center gap-3">
               <label className="flex cursor-pointer items-center gap-2">
-                <input
-                  type="checkbox"
+                <Switch
+                  aria-label={t("Auto-Refresh")}
                   checked={autoRefresh}
-                  onChange={(e) => setAutoRefresh(e.target.checked)}
-                  className="peer sr-only"
+                  onCheckedChange={setAutoRefresh}
+                  className="data-[state=unchecked]:bg-input-bg data-[state=checked]:bg-long data-[state=checked]:hover:bg-long-hover"
+                  thumbClassName="data-[state=checked]:bg-content-on-long"
                 />
-                <div className="relative h-5 w-9 rounded-full bg-input-bg transition-colors peer-checked:bg-long peer-checked:hover:bg-long-hover">
-                  <div className="absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-content-inverse transition-transform peer-checked:translate-x-4" />
-                </div>
                 <span className="text-xs text-content-secondary">{t("Auto-Refresh")}</span>
               </label>
 
@@ -112,7 +111,7 @@ export function RollupExplorerPage() {
       <main className="p-6 max-w-7xl mx-auto">
         {error && (
           <div className="mb-6 p-4 bg-short/10 border border-short/30 rounded-lg">
-            <p className="text-sm text-short">{error}</p>
+            <p className="text-sm text-down">{error}</p>
           </div>
         )}
 
