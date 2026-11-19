@@ -538,5 +538,7 @@
   "Deposits minus withdrawals, adjusted for realized PNL, funding, and trading fees.": "入金から出金を差し引き、実現損益、資金調達、取引手数料を反映した値です。",
   "Funds available after unrealized losses and initial margin reserved for positions and open orders.": "未実現損失とポジションおよび未約定注文の初期証拠金を差し引いた利用可能資金です。",
   "Initial margin currently reserved for open positions.": "未決済ポジションに現在確保されている初期証拠金です。",
-  "The minimum account equity required to keep open positions.": "未決済ポジションを維持するために必要な最低口座資産です。"
+  "The minimum account equity required to keep open positions.": "未決済ポジションを維持するために必要な最低口座資産です。",
+  "This app will be available soon": "このアプリは近日公開予定です",
+  "Trading is not available yet.": "取引はまだご利用いただけません。"
 }

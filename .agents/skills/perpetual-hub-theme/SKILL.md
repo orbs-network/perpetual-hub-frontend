@@ -15,11 +15,15 @@ finalization delegation; do not start another questionnaire or approval round.
 
 ## Start with the partner's choices
 
-Reuse choices, assets and delegation already supplied. For a new brand, ask
-together for missing choices the partner has not delegated: app name, logo file
-or local path (text-only is fine), primary brand color or brand guide if
-available, and dark or light preference. Do not ask for individual
-theme tokens or insist on colors before showing a preview.
+Reuse choices, assets and delegation already supplied. For a new brand, first
+ask for the logo file or local path, offering text-only branding. After the logo
+reply or explicit skip, inspect any supplied asset and ask a separate question about
+missing dark/light preference and primary brand color or brand-guide hex. A
+suitable approximate logo color can be suggested in that second question.
+Skip either question if its choices are already supplied or delegated; a launch
+must not repeat the intake when handing off to this skill. Obtain any missing
+app name before applying branding. Do not ask for individual theme tokens or
+insist on colors before showing a preview.
 
 If choices are missing, use these defaults and explain them with the preview:
 

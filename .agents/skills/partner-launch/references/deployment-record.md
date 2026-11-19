@@ -19,15 +19,17 @@ Replace descriptions with actual values; record configured status, never secrets
 - Branding: name / logo or text-only / dark or light / primary color:
 - Supplied, logo-derived or defaulted inputs / final background and accent seeds:
 - Original/copied asset paths / preview reviewed / accepted or review delegated:
+- Requested ID preserved / real discovery result / coming-soon or active state:
 - Requested Netlify name / accepted or generated name / provider-confirmed availability:
 - Provider / account and team / verified site ID / stable production URL:
 - Last draft URL / deployment ID and date:
 - Pricing checked at / official sources / actual plan and spending decision:
 - Public build variables: names and configured/blank status only:
-- WalletConnect: owning account / project dashboard URL / setup completed or skipped / allowed site origins:
+- WalletConnect: owning account / project dashboard URL / setup configured, deferred (instructions provided) or explicitly skipped / allowed site origins:
 - Checks: source/type/lint/build; draft/live HTTPS/assets/routes/mobile/keyboard:
 - Browser REST/CORS / WebSocket / WalletConnect: passed, pending or blocked + why:
 - Website published: URL or pending reason:
+- Coming-soon toast / read-only actions (empty discovery), or Retry error: observed result:
 - Trading activation pending: team contact, assignment/discovery/network/origin tasks:
 - Private backup path and date:
 

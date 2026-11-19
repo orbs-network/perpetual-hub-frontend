@@ -10,6 +10,7 @@ import { MobileCardList } from "./MobileCardList";
 import { useTranslation } from "@/hooks/useSafeTranslation";
 import { resolveCsvFilename } from "./csvExport";
 import type { CsvExportConfig } from "./csvExport";
+import { isPartnerApprovalPending } from "@/config/partners/availability";
 
 export function AuthPrompt({
   icon: Icon,
@@ -26,7 +27,7 @@ export function AuthPrompt({
     return (
       <div className="flex flex-row items-center justify-center text-content-muted gap-2 text-[11px]">
         <Icon size={24} className="text-content-muted/30" />
-        {!isConnected
+        {isPartnerApprovalPending() ? t("Trading is not available yet.") : !isConnected
           ? `${t("Connect wallet to view")} ${translatedLabel}`
           : `${t("Sign in to view")} ${translatedLabel}`}
       </div>

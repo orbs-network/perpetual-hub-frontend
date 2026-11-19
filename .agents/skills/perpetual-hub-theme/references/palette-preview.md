@@ -119,14 +119,17 @@ hosted production site ignores them.
 
 Inspect and show the branded desktop and mobile layout, chart and a reachable
 dialog. Give screenshots if local links cannot be opened, clearly identifying
-the candidate and viewport. Use the real requested identity and preserve any
-unavailable-discovery screen. Do not switch to `global`, mock data or imply that
-an unavailable trading view has been previewed. The current `PartnerBootstrap` unavailable
-screen has no app header/name/logo: its theme and document metadata can be
-checked, but header/drawer logo sizing and trading consumers remain blocked.
-Show the supplied asset separately if helpful, clearly distinguishing that from
-an in-app preview. Explain the blocked review and record it in the handoff; do
-not claim the full branded application has been visually verified.
+the candidate and viewport. A validated empty discovery response automatically
+renders the real app read-only for branding review, locally and in production.
+Keep the requested ID. This uses public market reads from the existing global
+lane and display-only chain metadata, and disables wallets, private/account
+reads and mutations. A permanent coming-soon toast explains that trading is not
+yet available. No preview flag is needed, and no fake candles, orders or balances
+are provided. The wallet picker, signing and funded states remain outside this
+review while approval is pending. Do not manually switch the ID or add fallback
+contracts/mocks. Connection or validation errors still show Retry; resolve or
+record those blockers. A successful visual review does not confirm partner
+approval, hosted connectivity or trading access.
 
 Invite feedback on the result in ordinary language: “Keep this version, or change
 the color, page brightness or logo size?” Keep the review question concise. Apply

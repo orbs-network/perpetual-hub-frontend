@@ -538,5 +538,7 @@
   "Deposits minus withdrawals, adjusted for realized PNL, funding, and trading fees.": "Deposits minus withdrawals, adjusted for realized PNL, funding, and trading fees.",
   "Funds available after unrealized losses and initial margin reserved for positions and open orders.": "Funds available after unrealized losses and initial margin reserved for positions and open orders.",
   "Initial margin currently reserved for open positions.": "Initial margin currently reserved for open positions.",
-  "The minimum account equity required to keep open positions.": "The minimum account equity required to keep open positions."
+  "The minimum account equity required to keep open positions.": "The minimum account equity required to keep open positions.",
+  "This app will be available soon": "This app will be available soon",
+  "Trading is not available yet.": "Trading is not available yet."
 }

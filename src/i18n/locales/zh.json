@@ -538,5 +538,7 @@
   "Deposits minus withdrawals, adjusted for realized PNL, funding, and trading fees.": "存款减去提款，并计入已实现盈亏、资金费用和交易手续费。",
   "Funds available after unrealized losses and initial margin reserved for positions and open orders.": "扣除未实现亏损以及为持仓和未成交订单预留的初始保证金后的可用资金。",
   "Initial margin currently reserved for open positions.": "当前为未平仓仓位预留的初始保证金。",
-  "The minimum account equity required to keep open positions.": "维持未平仓仓位所需的最低账户权益。"
+  "The minimum account equity required to keep open positions.": "维持未平仓仓位所需的最低账户权益。",
+  "This app will be available soon": "此应用即将上线",
+  "Trading is not available yet.": "交易功能暂未开放。"
 }

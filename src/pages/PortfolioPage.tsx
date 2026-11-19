@@ -66,6 +66,7 @@ import {
   formatPnL,
 } from "@/utils/formatting";
 import { useTranslation } from "@/hooks/useSafeTranslation";
+import { isPartnerApprovalPending } from "@/config/partners/availability";
 import type { UserPortfolioResponse } from "@/types";
 
 type PortfolioChartMetric = "accountValue" | "pnl" | "volume";
@@ -804,7 +805,7 @@ export function PortfolioView({
     : PORTFOLIO_TAB_VALUES[0];
   if (!portfolioAddress || portfolioQuery.isError) {
     const unavailableMessage = !portfolioAddress
-      ? t("Connect your wallet to view your portfolio")
+      ? t(isPartnerApprovalPending() ? "Trading is not available yet." : "Connect your wallet to view your portfolio")
       : t("Unable to load portfolio");
 
     return (
