@@ -21,15 +21,15 @@ export function HeaderBrand({
       aria-label={t("header.goToTradingPage")}
       className={`header-brand flex min-w-0 items-center gap-2 ${isMobile ? "mr-2" : "mr-4"}`}
     >
-      {partner.logoUrl && (
+      {(partner.wordmarkUrl || partner.logoUrl) && (
         <img
-          src={partner.wordmarkUrl ?? partner.logoUrl}
+          src={partner.wordmarkUrl || partner.logoUrl}
           alt={partner.name}
           className={partner.wordmarkUrl ? "h-6 w-auto max-w-[112px] object-contain" : "h-6 w-6 rounded-[4px]"}
         />
       )}
-      {!isMobile && !partner.wordmarkUrl && (
-        <span className="truncate text-sm font-bold text-logo-color">
+      {!partner.wordmarkUrl && (!isMobile || !partner.logoUrl) && (
+        <span className="max-w-[40vw] truncate text-sm font-bold text-logo-color min-[1000px]:max-w-[200px]">
           {partner.name}
         </span>
       )}

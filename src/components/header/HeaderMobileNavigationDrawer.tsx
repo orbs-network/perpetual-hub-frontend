@@ -65,18 +65,18 @@ export function HeaderMobileNavigationDrawer({
           {t("header.navigationMenu")}
         </DrawerTitle>
         <div className="flex h-[53px] items-center justify-between px-4">
-          {partner.logoUrl && (
+          {(partner.wordmarkUrl || partner.logoUrl) ? (
             <img
-              src={partner.wordmarkUrl ?? partner.logoUrl}
+              src={partner.wordmarkUrl || partner.logoUrl}
               alt={partner.name}
               className={partner.wordmarkUrl ? "h-7 w-auto max-w-[128px] object-contain" : "h-7 w-7"}
             />
-          )}
+          ) : <span className="min-w-0 truncate text-sm font-bold text-logo-color">{partner.name}</span>}
           <DrawerClose asChild>
             <button
               type="button"
               aria-label={t("Close")}
-              className="flex h-8 w-8 items-center justify-center rounded text-content-muted transition-colors hover:bg-hover hover:text-content"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded text-content-muted transition-colors hover:bg-hover hover:text-content"
             >
               <X size={18} />
             </button>

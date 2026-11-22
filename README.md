@@ -66,8 +66,10 @@ must update the skill in the same change. A launch prompt carries partner data
 and pre-clone safeguards rather than another copy of these steps.
 
 Before activation, a validated empty chain response shows the branded app with
-public market data and a persistent, non-dismissible “This app will be available
-soon” toast. The navbar chain selector and all wallet connection buttons are hidden;
+public market data and a persistent coming-soon status: a non-dismissible toast
+on desktop and a compact row with reserved space below the navbar on mobile.
+Market/configuration failures are reported independently with Retry controls
+in failed panels. Generic network errors do not establish missing origin approval. The navbar chain selector and all wallet connection buttons are hidden;
 private account data and financial actions remain disabled, and display metadata uses zero contract/collateral addresses.
 The requested partner identity is preserved; only allowlisted public GET reads
 use the existing public data lane. Approval takes effect on the next page load

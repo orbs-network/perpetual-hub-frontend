@@ -35,6 +35,7 @@ export function useTeeConfig() {
       return response.config;
     },
     retry: TEE_CONFIG_RETRY_COUNT,
+    retryOnMount: false,
     retryDelay: teeConfigRetryDelay,
     refetchInterval: (query) => teeConfigRefetchInterval(query.state.status),
     refetchIntervalInBackground: false,

@@ -1,3 +1,5 @@
+import { useMarkets } from "@/hooks/useMarkets";
+import { TradingServiceError } from "@/components/TradingServiceError";
 import { Separator } from "../../ui/separator";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { PriceInputs } from "./PriceInputs";
@@ -14,6 +16,8 @@ import OrderFormProvider from "@/context/order-form/Provider";
 
 export function OrderForm() {
   const isMobile = useIsMobile();
+  const { isUnavailable } = useMarkets();
+  if (isUnavailable) return <TradingServiceError />;
   return (
     <OrderFormProvider>
       <div className="overflow-hidden flex flex-col h-full">

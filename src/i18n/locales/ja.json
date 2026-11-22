@@ -540,5 +540,9 @@
   "Initial margin currently reserved for open positions.": "未決済ポジションに現在確保されている初期証拠金です。",
   "The minimum account equity required to keep open positions.": "未決済ポジションを維持するために必要な最低口座資産です。",
   "This app will be available soon": "このアプリは近日公開予定です",
-  "Trading is not available yet.": "取引はまだご利用いただけません。"
+  "Trading is not available yet.": "取引はまだご利用いただけません。",
+  "Waiting for dPERPS team activation.": "dPERPSチームによる有効化を待っています。",
+  "Unable to reach trading services.": "取引サービスに接続できません。",
+  "Market data is unavailable.": "市場データを利用できません。",
+  "Try again to load market data. Trading activation is separate.": "市場データの読み込みを再試行してください。取引の有効化は別の手続きです。"
 }

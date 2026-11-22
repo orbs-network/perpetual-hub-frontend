@@ -139,15 +139,19 @@ Check the draft and stable production origin in a browser: HTTPS, intended
 branding/metadata/assets, desktop/mobile layout, keyboard access, direct route
 loads and refreshes, absence of the Netlify hosting badge in a clean session,
 and console/network errors. Check actual browser REST/CORS
-and WebSocket access separately when discovery permits. A working local proxy,
+and WebSocket access from the actual published browser origin. If discovery
+prevents an application-level test, report it as **not tested/blocked**; a
+separately permitted read-only transport probe is only transport evidence, not
+proof of an authenticated subscription or successful pairing. A working local proxy,
 an HTTP-only probe or a reachable page is not hosted access approval. Check
 WalletConnect pairing separately when already configured and reachable. Check
 actual draft/production origins against available allowlist records; if this
 requires a Reown login, leave that check pending and provide written origin-setup
 instructions instead of opening a wallet-account browser walkthrough. If no ID
 is configured, publish with it blank, mark pairing deferred and include the
-[written wallet follow-up](../SKILL.md#walletconnect-follow-up) at the end. Do not
-start a Reown account/browser walkthrough to complete a hosting check. Use an empty wallet
+[written wallet follow-up](../SKILL.md#walletconnect-follow-up) in `DEPLOYMENT.md`,
+linked from the handoff. Do not start a Reown account/browser walkthrough to
+complete a hosting check. Use an empty wallet
 for an optional connection test, or skip it. Do not sign messages/terms, approve tokens,
 trade, deposit or withdraw for a hosting check.
 
@@ -155,6 +159,11 @@ Track these states independently:
 
 - **Website published: URL** only after verifying the stable production site.
   Otherwise say draft ready, not published, or publication pending.
+- **Hosted connectivity:** report browser REST and WebSockets separately as
+  verified, blocked, unavailable or not tested. Keep this independent of
+  publication, activation and wallet pairing; do not infer missing origin approval
+  from a generic network error.
+- **Optional wallet pairing:** tested, deferred or blocked, with its own reason.
 - **Trading activation pending** until the team confirms the assigned partner
   ID, enabled networks and authoritative discovery/configuration, approves the
   exact published browser origin for REST/CORS and WebSockets, and applicable
@@ -164,20 +173,26 @@ Query the exact registry-check URL from the brief, if provided, without inventin
 an endpoint. A response marked `mock: true` is informational even when enabled;
 it confirms neither assignment nor real activation. Missing/unreachable/disabled
 status or a placeholder contact must not stall customization, build or preview.
-Use the supplied contact for the creator's handoff; do not ask the creator to
+Use only a real supplied contact/tracking link for the creator's handoff. If none
+is provided, explicitly report **activation contact not provided**; do not ask the creator to
 verify team-only facts or message the team without authorization.
 
 At this source version, `fetchPartnerChains` is an explicitly temporary fixture
 for `global` only. Other requested partners return no active chains until the real
 discovery integration and activation exist. A validated empty chain response
 shows the branded UI read-only with a permanent coming-soon toast; it does not
-grant trading access. Its clock toast is permanent at the top right; the navbar
-chain selector and all wallet connection buttons are hidden. Explain this as an
+grant trading access. Its permanent clock toast is at the top right on desktop; mobile uses a compact
+status area below the navbar with reserved layout space. The chain selector and
+wallet connection buttons are hidden. Market/configuration failures show a
+separate connection message and failed-panel Retry controls, not endless loading. Explain this as an
 expected pending-activation state, not as a setup error or a missing WalletConnect
 ID. This happens automatically for local and built/hosted
 sites; use `npm run dev` for branding review without changing the requested ID.
 Verify the coming-soon state for an empty response or Retry for connection or
 validation errors.
 Record account/wallet/trading checks as blocked instead of claiming activation.
-Give the creator the final URL to add in the portal and send for team approval;
-saving a website there grants no access.
+After stable-site verification, follow [address-callback.md](address-callback.md)
+for any documented, authorized address-submission integration. Otherwise record
+submission as not configured/blocked and supply only a real provided manual
+route. Callback acknowledgement or saving an address in a portal grants no
+access. Use the main skill's four-status handoff and one creator next action.

@@ -3,6 +3,8 @@ import { useOrderFormStore } from '@/stores/orderFormStore';
 import { useTradeSymbol } from '@/hooks/useSelectTradeSymbol';
 import { LevelRow, ROW_MIN_HEIGHT_PX, ROW_GAP_PX } from './LevelRow';
 import { CenterRow } from './CenterRow';
+import { useMarkets } from '@/hooks/useMarkets';
+import { TradingServiceError } from '../TradingServiceError';
 import { OrderBookSkeleton } from './Skeleton';
 import { DenomDropdown } from './DenomDropdown';
 import { GroupingDropdown, type GroupingOptionIndex } from './GroupingDropdown';
@@ -369,6 +371,7 @@ export function OrderBook({
 } = {}) {
   const { t } = useTranslation();
   const { data, status } = useSelectedOrderBook();
+  const { isUnavailable } = useMarkets();
   const onOrderBookPrice = useOrderFormStore((s) => s.onOrderBookPrice);
   const { market } = useTradeSymbol();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -468,6 +471,7 @@ export function OrderBook({
 
   return (
     <div ref={containerRef} data-testid="order-book" className="flex flex-col h-full">
+      {isUnavailable ? <TradingServiceError /> : <>
       {!compact && (
         <div className="flex h-[32px] items-center gap-2 border-b border-edge px-2">
           <div className="flex min-w-0 flex-1 items-center" data-orderbook-slot="left">
@@ -599,6 +603,7 @@ export function OrderBook({
           )}
         </>
       )}
+      </>}
     </div>
   );
 }

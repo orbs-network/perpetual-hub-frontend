@@ -259,14 +259,14 @@ export function PositionShareModal({
         <ShareCardBackground direction={arrowDirection} />
 
         <div className="relative z-10 flex items-center gap-2 text-[18px] font-semibold text-content sm:gap-3 sm:text-[28px]">
-          <img
-            src={partner.wordmarkUrl ?? partner.logoUrl}
+          {(partner.wordmarkUrl || partner.logoUrl) && <img
+            src={partner.wordmarkUrl || partner.logoUrl}
             alt={partner.wordmarkUrl ? partner.name : ""}
             className={partner.wordmarkUrl
               ? "h-6 w-auto max-w-full object-contain sm:h-8"
               : "h-6 w-6 sm:h-8 sm:w-8"}
-          />
-          {!partner.wordmarkUrl && <span>{partner.name}</span>}
+          />}
+          {!partner.wordmarkUrl && <span className="min-w-0 truncate">{partner.name}</span>}
         </div>
 
         <div className="relative z-10 mt-8 flex items-center gap-2 sm:mt-20 sm:gap-3">
