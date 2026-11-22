@@ -540,5 +540,9 @@
   "Initial margin currently reserved for open positions.": "Initial margin currently reserved for open positions.",
   "The minimum account equity required to keep open positions.": "The minimum account equity required to keep open positions.",
   "This app will be available soon": "This app will be available soon",
-  "Trading is not available yet.": "Trading is not available yet."
+  "Trading is not available yet.": "Trading is not available yet.",
+  "Waiting for dPERPS team activation.": "Waiting for dPERPS team activation.",
+  "Unable to reach trading services.": "Unable to reach trading services.",
+  "Market data is unavailable.": "Market data is unavailable.",
+  "Try again to load market data. Trading activation is separate.": "Try again to load market data. Trading activation is separate."
 }

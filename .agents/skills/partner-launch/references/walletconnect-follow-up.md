@@ -5,7 +5,9 @@ setup, or when the partner later explicitly requests that update. Paths are
 relative to the app repository root. This is not part of branding or Netlify setup.
 
 When no partner-owned project ID was supplied/configured, finish the launch and
-append concise written instructions to the final handoff. Explain that QR/mobile
+save concise written instructions in `DEPLOYMENT.md` and link them from the
+final handoff. Do not add a second immediate task list for the creator. Explain
+that QR/mobile
 wallet pairing is not configured yet. Installed browser wallets remain supported
 once trading is active; while approval is pending, all connection controls are
 hidden. Adding a WalletConnect ID does not activate trading or remove the
@@ -21,14 +23,14 @@ walkthrough or ask them to complete these steps before publishing:
    accepting any charges. Copy the public **Project ID**, which is different
    from the dPERPS partner ID. No recovery phrase or private key is needed.
 2. In the project's origin allowlist, add this site's exact published origin.
-   Fill in the actual verified URL in the handoff, including `https://` and no
+   Fill in the actual verified URL in the notes, including `https://` and no
    path. Add draft origins only if pairing will be tested on those drafts;
    preserve needed existing entries. Link the
    [Reown relay/allowlist guide](https://docs.reown.com/cloud/relay). If publication
    is pending, say so rather than inventing a hostname.
 3. Return to the agent with the public Project ID and ask it to configure
    WalletConnect, rebuild and redeploy the app to the same recorded Netlify site.
-   Include the actual source folder and this follow-up prompt in the handoff:
+   Include the actual source folder and this follow-up prompt in the notes:
    “Configure WalletConnect for my app using the public Project ID I provide.
    Read AGENTS.md, partner-launch and DEPLOYMENT.md. Set the build-time ID, run
    the checks, rebuild and redeploy to the existing site; verify QR/mobile pairing

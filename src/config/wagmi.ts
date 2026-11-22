@@ -113,10 +113,12 @@ export const wallets = isMobile
  * then `createConfig`. `connectorsForWallets` supplies the configured partner
  * name and current-origin icon to wallet connection metadata.
  */
+const walletIcon = partner.favicon || partner.logoUrl;
+
 export const connectors = isPartnerApprovalPending() ? [] : connectorsForWallets(wallets, {
   appName: partner.name,
-  appIcon: typeof window !== 'undefined'
-    ? new URL(partner.favicon ?? partner.logoUrl, window.location.origin).href
+  appIcon: walletIcon && typeof window !== 'undefined'
+    ? new URL(walletIcon, window.location.origin).href
     : undefined,
   projectId: walletConnectProjectId,
 });

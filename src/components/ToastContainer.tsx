@@ -4,6 +4,7 @@ import { CheckCircle, Clock3 } from 'lucide-react';
 import { getThemeColorScheme } from '@/config/partners';
 import { useAppliedThemeColors } from '@/hooks/useAppliedThemeColors';
 import { useTranslation } from '@/hooks/useSafeTranslation';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { isPartnerApprovalPending } from '@/config/partners/availability';
 
 const AVAILABILITY_TOASTER_ID = 'partner-availability';
@@ -11,7 +12,8 @@ const AVAILABILITY_TOASTER_ID = 'partner-availability';
 export function ToastContainer() {
   const theme = useAppliedThemeColors();
   const { t } = useTranslation();
-  const pending = isPartnerApprovalPending();
+  const isMobile = useIsMobile();
+  const pending = isPartnerApprovalPending() && !isMobile;
   useEffect(() => {
     if (!pending) return;
     const id = toast.message(t('This app will be available soon'), {

@@ -14,6 +14,7 @@ import { compareSymbols } from "@/lib/utils";
 import { useTradeSymbol } from "@/hooks/useSelectTradeSymbol";
 import { useUserPreferencesStore } from "@/stores/userPreferencesStore";
 import { ChartOverlayLayer } from "@/components/trading-chart/ChartOverlayLayer";
+import { TradingServiceError } from "./TradingServiceError";
 import { ChartSkeleton } from "@/components/trading-chart/ChartSkeleton";
 import { CurrentPriceSync } from "@/components/trading-chart/CurrentPriceSync";
 import { useChartOrderInteractions } from "@/components/trading-chart/hooks/useChartOrderInteractions";
@@ -42,7 +43,7 @@ export function TradingChart() {
 
   const { symbol, market: selectedMarket } = useTradeSymbol();
   const priceSource = DEFAULT_PRICE_SOURCE;
-  const { data: markets = EMPTY_MARKETS } = useMarkets();
+  const { data: markets = EMPTY_MARKETS, isUnavailable } = useMarkets();
   const { data: userAccount } = useUserAccount();
   const isMobile = useIsMobile();
   const { data: trades } = useTradeHistory();
@@ -221,7 +222,7 @@ export function TradingChart() {
         data-testid="trading-chart-surface"
         role="region"
         aria-label={`${symbol} ${t("Chart")}`}
-        aria-busy={isChartLoading}
+        aria-busy={isChartLoading && !isUnavailable}
         style={{ backgroundColor: theme.surface }}
       >
         <div
@@ -230,8 +231,8 @@ export function TradingChart() {
           className="absolute inset-0 min-h-0 min-w-0"
         />
         {isChartReady ? overlayLayer : null}
-        {isChartLoading ? <ChartSkeleton /> : null}
-        {error ? (
+        {isUnavailable ? <div className="absolute inset-0 z-20"><TradingServiceError /></div> : isChartLoading ? <ChartSkeleton /> : null}
+        {error && !isUnavailable ? (
           <div
             role="status"
             className="absolute inset-x-0 bottom-0 z-30 flex items-center justify-center gap-3 border-t border-edge bg-surface/95 px-3 py-2 text-center text-xs text-content-muted"

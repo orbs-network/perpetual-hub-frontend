@@ -207,7 +207,7 @@ function ShareImageCard({
       />
       <div className="absolute -bottom-16 left-1/2 h-[270px] w-[270px] -translate-x-1/2 rounded-full border border-accent-primary/20" />
       <div className="relative z-10 flex flex-1 flex-col items-center justify-center text-center">
-        <img src={partner.logoUrl} alt="" className="mb-10 h-12 w-12 object-contain" />
+        {partner.logoUrl && <img src={partner.logoUrl} alt="" className="mb-10 h-12 w-12 object-contain" />}
         {isLoading ? (
           <div
             className="flex flex-col items-center"

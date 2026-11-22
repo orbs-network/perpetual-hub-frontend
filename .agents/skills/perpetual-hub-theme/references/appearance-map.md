@@ -84,9 +84,9 @@ report does not establish whole-app readability.
 
 | Field or file | What it changes |
 | --- | --- |
-| `name` | Header accessible name and desktop fallback text; document title; wallet app name; points and position-share branding. It does not rename the backend partner ID. |
-| `logoUrl` | Compact app icon. Required for header image rendering even with a wordmark. Points share uses it directly. Also fallback for wallet app icon and position share. |
-| `wordmarkUrl` | Full horizontal brand lockup. Header uses it at 24px high/max 112px wide; navigation drawer at 28px high/max 128px. When present, header and position-share card suppress separate brand-name text. Mobile header normally hides fallback name text. |
+| `name` | Header accessible name and responsive text-only fallback; document title; wallet app name; points and position-share branding. It does not rename the backend partner ID. |
+| `logoUrl` | Compact app icon. Header and points sharing omit it when empty; text-only header/drawer names remain visible. Also fallback for wallet app icon and position share. |
+| `wordmarkUrl` | Full horizontal brand lockup. Header uses it at 24px high/max 112px wide; navigation drawer at 28px high/max 128px. When present, header and position-share card suppress separate brand-name text. Mobile header hides the extra name only when a logo is present; text-only names remain visible. |
 | `favicon` | Browser icon through build and runtime code; preferred wallet app icon in `src/config/wagmi.ts`. Supported MIME inference covers `.svg`, `.png`, `.webp`; inspect handling if another format is requested. |
 | `previewImageUrl`, `previewImageType` | Configured OG/Twitter image, large-image card and OG MIME metadata through `vite.config.ts` and runtime `applyTheme`. This is a social card asset, not a replacement for the compact icon. |
 | `docsUrl`, `supportUrl`, `policyUrls` | Footer, referral documentation and terms acceptance links. Blank policy URLs hide footer links and render plain labels in terms acceptance. Update when requested; branding alone does not establish new legal URLs. |

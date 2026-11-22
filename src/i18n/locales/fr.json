@@ -540,5 +540,9 @@
   "Initial margin currently reserved for open positions.": "Marge initiale actuellement réservée aux positions ouvertes.",
   "The minimum account equity required to keep open positions.": "Fonds propres minimum requis pour conserver les positions ouvertes.",
   "This app will be available soon": "Cette application sera bientôt disponible",
-  "Trading is not available yet.": "Le trading n’est pas encore disponible."
+  "Trading is not available yet.": "Le trading n’est pas encore disponible.",
+  "Waiting for dPERPS team activation.": "En attente de l’activation par l’équipe dPERPS.",
+  "Unable to reach trading services.": "Impossible de joindre les services de trading.",
+  "Market data is unavailable.": "Les données de marché sont indisponibles.",
+  "Try again to load market data. Trading activation is separate.": "Réessayez de charger les données de marché. L’activation du trading est indépendante."
 }

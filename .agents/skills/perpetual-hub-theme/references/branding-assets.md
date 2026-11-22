@@ -19,11 +19,9 @@ previewImageType: 'image/png',
 
 For text-only branding, set `logoUrl: ''`, remove `wordmarkUrl` and clear or
 replace old favicon/social-image fields and their static HTML tags. Do not leave
-the previous brand's icon in a partner preview. The current mobile header hides
-fallback name text: inspect it and provide a small responsive name fallback if
-needed for the requested text-only result. Check the drawer and share consumers
-too; an empty image path must not become a broken image. This may require a
-narrow component change rather than a new palette token.
+the previous brand's icon in a partner preview. The header and drawer support a responsive text-only name fallback. Check
+long names on mobile and the points/position share surfaces; empty image paths
+must be omitted, not rendered as broken images.
 
 These are example paths, not assets to create automatically. Inspect supplied
 files and ensure the paths exist. For SVG, retain a valid `viewBox` and check
@@ -31,7 +29,7 @@ padding and intrinsic proportions; for raster images, check transparent edges
 and resolution at the rendered sizes. Use compact and horizontal assets for
 their intended slots. Do not stretch a square logo into a wordmark.
 
-The header image is guarded by `logoUrl` even when it uses `wordmarkUrl`.
+A supplied wordmark can render independently of a compact logo.
 `logo-color` colors header text, not a logo loaded through `<img>`; edit the asset
 when its baked-in colors need changing. Keep accessible names tied to `name`.
 Inspect both headers, wallet metadata, position sharing and points sharing—the

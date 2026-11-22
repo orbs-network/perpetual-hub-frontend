@@ -6,6 +6,7 @@ import {
   type ItemProps,
   type TableComponents,
 } from "react-virtuoso";
+import { TradingServiceError } from "./TradingServiceError";
 import { useMarkets } from "../hooks/useMarkets";
 import type { MarketInfo } from "../api/markets";
 import { useAllPrices } from "../hooks/useBinancePrices";
@@ -465,7 +466,7 @@ function MarketsListContent({
   const { t } = useTranslation();
   const isMobile = variant === "mobile";
 
-  const { data: markets, isLoading } = useMarkets();
+  const { data: markets, isLoading, isUnavailable } = useMarkets();
   const { data: prices = {} } = useAllPrices();
   const prioritySymbols =
     partner.marketPreferences?.prioritySymbols ?? EMPTY_MARKET_PRIORITY_SYMBOLS;
@@ -634,7 +635,7 @@ function MarketsListContent({
 
       {/* Markets list */}
       <div className="min-h-0 flex-1 overflow-x-hidden">
-        {isLoading ? (
+        {isUnavailable ? <TradingServiceError /> : isLoading ? (
           <table
             className={cn(
               "w-full max-w-full table-fixed border-separate border-spacing-0 text-[11px] tabular-nums",
