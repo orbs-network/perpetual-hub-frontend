@@ -2,7 +2,7 @@
 
 Read this when preparing the final handoff for missing/deferred WalletConnect
 setup, or when the partner later explicitly requests that update. Paths are
-relative to the app repository root. This is not part of branding or Netlify setup.
+relative to the app repository root. This is not part of branding or hosting setup.
 
 When no partner-owned project ID was supplied/configured, finish the launch and
 save concise written instructions in `DEPLOYMENT.md` and link them from the
@@ -29,12 +29,14 @@ walkthrough or ask them to complete these steps before publishing:
    [Reown relay/allowlist guide](https://docs.reown.com/cloud/relay). If publication
    is pending, say so rather than inventing a hostname.
 3. Return to the agent with the public Project ID and ask it to configure
-   WalletConnect, rebuild and redeploy the app to the same recorded Netlify site.
+   WalletConnect, rebuild and redeploy the app to the same recorded hosting site
+   (or prepare an updated build if the creator hosts it themselves).
    Include the actual source folder and this follow-up prompt in the notes:
    “Configure WalletConnect for my app using the public Project ID I provide.
    Read AGENTS.md, partner-launch and DEPLOYMENT.md. Set the build-time ID, run
-   the checks, rebuild and redeploy to the existing site; verify QR/mobile pairing
-   where reachable.” The partner does not need to edit files or run commands.
+   the checks, rebuild and redeploy to the existing site, or prepare the updated
+   self-hosted build; verify QR/mobile pairing where reachable.” The partner
+   does not need to edit files or run commands.
 
 For that later requested update, set `VITE_WALLETCONNECT_PROJECT_ID` in ignored
 `.env.local`, preserve unrelated settings, restart/rebuild, and follow the same-site
