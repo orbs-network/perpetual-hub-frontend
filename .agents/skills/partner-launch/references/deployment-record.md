@@ -21,9 +21,12 @@ Replace descriptions with actual values; record configured status, never secrets
 - Original/copied asset paths / preview reviewed / accepted or review delegated:
 - Specifically delegated choices/approvals; review decisions still reserved:
 - Requested ID preserved / real discovery result / coming-soon or active state:
-- Requested Netlify name / accepted or generated name / provider-confirmed availability:
+- Hosting preference: supplied provider / default Netlify / self-hosting / build handoff due to access blocker:
+- Requested address or name / accepted or generated name / provider-confirmed availability (pending or not applicable for a build-only handoff):
 - Provider / account and team / verified site ID / stable production URL:
-- Netlify hosting badge: project-wide disabled / clean desktop-mobile verification / plan restriction or blocker:
+- Hosting tool/CLI version / reusable local site-link location / authorization reused or renewed (no credentials):
+- Netlify hosting badge: project-wide disabled / clean desktop-mobile verification / plan restriction or blocker / not applicable for another host:
+- Build-only handoff if applicable: dist and archive paths / routing instructions / upload or access blocker / hosted checks pending:
 - Last draft URL / deployment ID and date:
 - Pricing checked at / official sources / actual plan and spending decision:
 - Public build variables: names and configured/blank status only:

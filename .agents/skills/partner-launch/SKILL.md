@@ -47,10 +47,13 @@ Keep questions in this order, asking only for missing, undelegated choices:
    name here only if it is still missing. Offer to choose sensible defaults.
 3. **Preview:** show the actual branded app, explain any coming-soon notice,
    and allow adjustments. Apply changes until accepted or finalization is delegated.
-4. **Website address:** only after design review, ask for `name.netlify.app` or
-   a generated address. Then handle Netlify availability, account setup and login.
-5. **Published link and handoff:** verify the website, report activation status,
-   and leave any missing WalletConnect setup as concise written instructions.
+4. **Hosting and website address:** only after design review, respect the supplied
+   provider or self-hosting choice. Otherwise recommend Netlify without a separate
+   provider questionnaire. Ask only for a missing, undelegated address choice,
+   then handle the selected provider's availability, account setup and login.
+5. **Result and handoff:** verify and share the published website, or deliver
+   the checked build for self-hosting. Report activation status and leave any
+   missing WalletConnect setup as concise written instructions.
 
 Apply delegation only to the named decision or approval: choosing colors does
 not waive preview acceptance, choosing a design does not delegate the website
@@ -64,7 +67,7 @@ state the current step and next action, and explain browser/login popups when
 needed. Keep implementation details, public theme tokens and check results in
 local notes rather than turning them into tasks for the partner.
 
-Complete the local branded preview and visual checks before any Netlify
+Complete the local branded preview and visual checks before any hosting
 signup/login, linking, availability check or site creation, including when
 finalization was delegated upfront. Then proceed after acceptance or delegation.
 Reuse supplied address choices when that stage arrives. A missing WalletConnect project ID stays blank
@@ -131,7 +134,7 @@ npm ci --include=dev
 ```
 
 Do this locally while collecting branding; it is not a partner question or a
-Netlify setup step. Confirm the dev server can start before promising a link.
+hosting setup step. Confirm the dev server can start before promising a link.
 
 Write the supplied partner values into ignored `.env.local`, preserving unrelated
 settings. Verify `git check-ignore .env.local`. The current settings are:
@@ -192,7 +195,7 @@ assets, contrast checks and local preview mechanics.
    or a logo must not stall a preview; offer text-only branding when no logo is
    available, and do not invent a partner logo.
 
-   Portal defaults are not confirmed branding. Keep Netlify setup until after
+   Portal defaults are not confirmed branding. Keep hosting setup until after
    review, and missing wallet setup in the written final handoff.
 
 4. Copy supplied assets into `public/` and apply the actual name, logo, favicon
@@ -243,24 +246,44 @@ Later restyles use the theme skill on its own, then rerun the checks and the
 publication procedure for the same recorded site and URL; do not repeat URL
 selection on an update unless the partner requests a rename.
 
-## Netlify setup at the end
+## Hosting setup at the end
 
 Complete the branded preview and local visual checks first, even when the
 partner delegated finalization upfront. Once that preview is accepted or its
-finalization is delegated, begin Netlify signup/login, account linking, address
-availability checks and site creation. Do not open the Netlify dashboard or
+finalization is delegated, begin provider signup/login, account linking, address
+availability checks and site creation. Do not open hosting dashboards or
 ask hosting questions during logo collection, color selection or preview review. Reuse
 supplied choices and existing site records without repeating questions.
 
-Ask for the preferred address only if it is still missing and not delegated:
+Respect a supplied hosting preference, including another provider or a request
+to host the build themselves. On updates, reuse the recorded provider, account,
+site and URL unless a migration is explicitly requested. For a new launch with
+no preference, say: “I'll use Netlify unless you prefer another provider.” This
+is an optional alternative, not another mandatory choice or approval. Do not
+silently switch away from a chosen host when login or deployment is blocked.
+
+Use the selected provider's CLI/API or an already-connected tool first for
+account/site inspection, name selection, creation, upload and checks. Reuse
+existing authorization without requiring another tool connection. The agent
+handles provider setup;
+the partner should not navigate dashboards, copy tokens or run commands.
+Only hand off necessary signup/login/MFA or an account/spending decision.
+Follow the selected reference's login handoff and settings procedure;
+routine settings are not another partner questionnaire.
+
+For Netlify, ask for the preferred address only if it is still missing and not delegated:
 “What address would you like, such as `your-brand.netlify.app`? It must end in
 `.netlify.app`; I can also use a generated name.” Explain that they choose the
 part before `.netlify.app`, not a domain to buy. Reuse an existing site's URL on
-updates unless a rename is requested.
+updates unless a rename is requested. The `.netlify.app` suffix applies only
+to Netlify; use another provider's actual address rules for that provider.
+For self-hosting, prepare the checked production build and written instructions
+instead of creating a provider account/site or asking for a Netlify name.
 
 Read [references/hosting-and-activation.md](references/hosting-and-activation.md)
-before account/site setup and availability checking. Follow its available/taken/
-generated-name handling, current-plan and ownership requirements. Missing
+before account/site setup and availability checking. It routes to the Netlify
+or other-hosting reference; read only the selected path. Follow current-plan,
+ownership and provider-confirmed address requirements. Missing
 WalletConnect setup does not hold up URL selection or publication.
 
 ## Check and publish
@@ -287,9 +310,11 @@ do not establish financial correctness or trading activation.
 For authorized hosting work, read
 [references/hosting-and-activation.md](references/hosting-and-activation.md) before
 setting up an account/site, uploading a draft or publishing. It owns current-plan
-verification, Netlify name availability and selection, removing the Netlify
-hosting badge, static SPA setup, draft/live checks and separate activation
-handoff. Keep publication pending when authorization or required checks are
+verification, provider-specific address selection and SPA setup, applicable
+hosting-badge removal, draft/live checks and separate activation handoff.
+For self-hosting or unavailable deployment access, prepare the checked build
+and hosting instructions; report publication pending until the real site is
+verified. Keep publication pending when authorization or required checks are
 missing; local branding review needs no deployment.
 
 ## Record and hand off
@@ -321,10 +346,12 @@ Give a short reason for a blocked/unverified result. Do not count a public ticke
 or local proxy as hosted connectivity, infer origin approval from generic errors,
 or infer trading activation from publication, callback acceptance or wallet setup.
 If the activation contact is missing, say **activation contact not provided**.
-Choose one immediate next action: a required account step if blocked; submit the
-address through a real supplied portal/contact if automatic submission is pending;
-otherwise wait for activation. If no route/contact exists, say no creator action
-is possible yet until the portal supplies activation details. Do not ask the
+Choose one immediate next action: a required account/access step if needed to
+continue agent deployment; upload the prepared build for a self-hosting handoff;
+submit the published address through a real supplied portal/contact if automatic
+submission is pending; otherwise wait for activation. If an already published
+site has no activation route/contact, say no creator action is possible yet
+until the portal supplies activation details. Do not ask the
 creator to verify team-only facts or invent a destination.
 
 Put commands, diagnostics, pricing evidence, source/backup locations, the future
