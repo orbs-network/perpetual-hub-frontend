@@ -4,6 +4,8 @@ Read this when preparing the final handoff for missing/deferred WalletConnect
 setup, or when the partner later explicitly requests that update. Paths are
 relative to the app repository root. This is not part of branding or hosting setup.
 
+Use the shared [WalletConnect setup skill](https://github.com/orbs-network/agent-skills/blob/master/skills/walletconnect-setup/SKILL.md) for the common Reown workflow. Keep the Perps-specific behavior below. If the shared skill cannot be accessed, use this complete local procedure and report that it was unavailable.
+
 When no partner-owned project ID was supplied/configured, finish the launch and
 save concise written instructions in `DEPLOYMENT.md` and link them from the
 final handoff. Do not add a second immediate task list for the creator. Explain

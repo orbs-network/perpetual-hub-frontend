@@ -30,8 +30,7 @@ deployment merely to upload a static build.
 
 Read only the selected hosting procedure:
 
-- **Netlify:** [netlify.md](netlify.md) owns CLI authentication, `.netlify.app`
-  names, authoritative availability checks, project-wide badge removal and upload.
+- **Netlify:** Read and follow the shared [Netlify hosting skill](https://github.com/orbs-network/agent-skills/blob/master/skills/netlify-hosting/SKILL.md) for account, cost, naming, deployment and hosting verification. Also follow [netlify.md](netlify.md) for this app's static `dist/` build, SPA redirects and app-specific checks. If the shared skill cannot be accessed, use the complete local Netlify procedure as a fallback and report that the shared skill was unavailable.
 - **Another provider, existing infrastructure or self-hosting:**
   [other-hosting.md](other-hosting.md) owns adaptation, checked build delivery
   and the fallback when direct deployment is unavailable. Do not apply Netlify
