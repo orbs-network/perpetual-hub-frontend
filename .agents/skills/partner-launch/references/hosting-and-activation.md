@@ -21,20 +21,39 @@ local provider link. Resolve conflicting/stale links before upload; create a
 new site only when no intended site exists. Do not migrate providers or create
 a replacement site merely because authorization expired or access is blocked.
 
-For a new launch without a preference, recommend Netlify: “I'll use Netlify
-unless you prefer another provider.” Continue the default workflow without a
-separate mandatory provider-choice question. Reuse supplied choices; otherwise
-combine this optional alternative with the late address question. Do not show a
-long provider menu or require a GitHub account, fork, source push or continuous
-deployment merely to upload a static build.
+For a new launch without a preference, inspect already-connected supported
+tools and installed CLI status after the branded preview. Prefer a suitable
+existing account only when ownership and intended use are established; login
+alone is not authorization. Do not scan credential directories or install/login
+to every provider merely to find an account. Ask one plain account-level question
+if multiple eligible destinations remain ambiguous. Never use an internal,
+Orbs-owned or shared organization without explicit authorization for this partner.
+
+If no suitable account is available, recommend Netlify subject to current terms.
+Explain the choice briefly, with no mandatory provider menu. If this unselected
+default is unavailable/ineligible, consider Cloudflare Pages or another supported
+static host using the same eligibility and ownership checks. Respect an explicit
+provider choice; offer a specific alternative when it cannot be used rather than
+silently switching. Use local preview/build delivery when access or terms remain
+blocked. A temporary public preview is a separate opt-in path below, never the
+default fallback for a permanent launch. No GitHub account, fork, source push or
+continuous deployment is required merely to upload static files.
 
 Read only the selected hosting procedure:
 
 - **Netlify:** Read and follow the shared [Netlify hosting skill](https://github.com/orbs-network/agent-skills/blob/master/skills/netlify-hosting/SKILL.md) for account, cost, naming, deployment and hosting verification. Also follow [netlify.md](netlify.md) for this app's static `dist/` build, SPA redirects and app-specific checks. If the shared skill cannot be accessed, use the complete local Netlify procedure as a fallback and report that the shared skill was unavailable.
+- **Cloudflare Pages:** [cloudflare-pages.md](cloudflare-pages.md) covers
+  authorized Direct Upload, preview/production branches and SPA behavior.
+- **Vercel:** [vercel.md](vercel.md) covers the verified project, local Build
+  Output API artifact, matching build environments and required logout.
 - **Another provider, existing infrastructure or self-hosting:**
   [other-hosting.md](other-hosting.md) owns adaptation, checked build delivery
   and the fallback when direct deployment is unavailable. Do not apply Netlify
   suffixes, badge settings, commands or redirect syntax to other hosts.
+
+For an explicitly authorized registration-free public preview, read only
+[Netlify's temporary-preview section](netlify.md#explicit-temporary-public-preview-without-signup).
+Record its expiry/claim status and keep it separate from permanent publication.
 
 Use existing authenticated tools/CLI/API first and handle routine setup yourself.
 Only hand off personal signup/login/MFA, required account consent or a spending
@@ -42,11 +61,33 @@ choice. Never ask for passwords, tokens or keys in chat. Inspect the current
 account and intended site's ownership before writes; keep provider/session state
 ignored and credentials out of source, public build variables, notes and backups.
 
+Load shared hosting guidance yourself; do not ask the creator to find, install
+or invoke it. If the GitHub page cannot be read, try its official raw file once,
+then use the local fallback and note the unavailable source in `DEPLOYMENT.md`.
+Do not let repeated reference lookups stall an otherwise supported launch.
+App-specific requirements remain in force: static upload, saved partner build
+settings, preview before hosting, deferred missing WalletConnect and the four
+independent final statuses. A shared procedure does not authorize extra steps.
+
+For a permanent launch, an absent hosting account calls for guided signup, not an immediate build-only
+handoff. Check the selected provider's current suitable plan, prepare its login
+flow and explain the one action: “Sign in or create your account in this window;
+I'll set up and publish the site afterward.” The creator completes signup,
+verification and MFA; inspect the resulting account and resume when success is
+observable. Do not ask them to create the site, connect GitHub, enter build
+commands or configure redirects. Prefer existing sufficient tools and guide only
+required personal account actions. Keep login awaiting the creator separate from
+failed authentication, permission errors and provider outages. Do not silently
+change hosts or claim publication while waiting. Prepare a build handoff if the
+creator chooses self-hosting, declines signup or access remains unavailable after
+the relevant login/access path; include the exact remaining action.
+
 ## Check plan and costs
 
 For the selected managed provider, read current official pricing, usage and terms
 and inspect the actual account plan at each launch/update. Check commercial-use
-eligibility, deployment/traffic consumption, pauses, overages, recharge and upgrade
+eligibility and applicable product/use restrictions for a trading frontend,
+deployment/traffic consumption, pauses, overages, recharge and upgrade
 triggers as relevant. Give a short cost summary and any decision the creator
 must make; keep dated evidence and official source links in `DEPLOYMENT.md`.
 For existing infrastructure, record known costs and any unknown usage exposure;
@@ -65,7 +106,11 @@ If the build changes after draft checks, repeat checks before production. Use a
 draft/staging deployment when supported, then publish the reviewed build to the
 same verified owned site. If the host has no draft mode, inspect the production
 build locally first and verify the live site immediately after the authorized
-upload. Return the stable production URL rather than only a draft address.
+upload. Confirm the actual build output from the current scripts/configuration
+(currently `dist/`), preserve security headers and inspect public artifacts for
+accidental secrets, private configuration or another partner's data before upload.
+Record source revision/local changes, build settings/status and artifact provenance
+so the deployed version can be identified. Return the stable production URL rather than only a draft address.
 Dashboard env edits do not change an already built upload; rebuild with the
 intended values. Preserve existing routing and provider configuration, adapting
 only what the chosen host requires.
@@ -109,6 +154,11 @@ Track these states independently:
   ID, enabled networks and authoritative discovery/configuration, approves the
   exact published browser origin for REST/CORS and WebSockets, and applicable
   live connectivity checks pass. Record each unresolved item.
+
+When a network/RPC issue appears, follow [network-and-rpc.md](network-and-rpc.md)
+to distinguish it from backend access and pending approval. Use existing public
+defaults and perform applicable diagnostics yourself. Do not turn a hosting or
+activation error into a request for the creator's RPC credentials.
 
 Query the exact registry-check URL from the brief, if provided, without inventing
 an endpoint. A response marked `mock: true` is informational even when enabled;
