@@ -11,6 +11,15 @@ scaffold a replacement. A launch request authorizes its own-account publication
 within the stated cost limits; this skill alone authorizes no deployment,
 purchase, commit, push or team message. API-only integrations do not need hosting.
 
+Assume the partner has no development or hosting knowledge. Handle discovery,
+tools, configuration, fixes and verification yourself using the current checkout.
+Ask only for essential business/identity information, undelegated branding,
+ambiguous account/resource ownership, personal authorization or spending approval.
+Explain progress and blockers plainly; keep technical output in local notes.
+Preserve the logo → appearance → preview sequence and existing authorizations.
+For a local-preview-only request, finish local review/checks and stop before
+hosting account setup or public upload. Do not infer publication from review.
+
 ## Accept a short brief
 
 Accept the partner ID, app name, requested networks, permanent folder, branding
@@ -19,7 +28,7 @@ launch data. The brief only needs the official repository/skill location and
 instruction to read it; Git preparation, installation, environment settings and
 deploy commands belong here and in the linked references. Do not ask the creator
 to paste a longer technical prompt or execute commands. Missing optional colors,
-logo, WalletConnect ID or callback details do not block local preparation.
+logo, RPC URL, WalletConnect ID or callback details do not block local preparation.
 
 If the checkout is absent, read this skill from the official repository first,
 then follow [workspace-setup.md](references/workspace-setup.md) before cloning.
@@ -48,8 +57,9 @@ Keep questions in this order, asking only for missing, undelegated choices:
 3. **Preview:** show the actual branded app, explain any coming-soon notice,
    and allow adjustments. Apply changes until accepted or finalization is delegated.
 4. **Hosting and website address:** only after design review, respect the supplied
-   provider or self-hosting choice. Otherwise recommend Netlify without a separate
-   provider questionnaire. Ask only for a missing, undelegated address choice,
+   provider or self-hosting choice. Otherwise reuse a suitable authorized hosting
+   account when available, with Netlify as the default recommendation for a new
+   account. Ask only for a missing, undelegated address choice,
    then handle the selected provider's availability, account setup and login.
 5. **Result and handoff:** verify and share the published website, or deliver
    the checked build for self-hosting. Report activation status and leave any
@@ -115,6 +125,30 @@ switch branches, and do not ask the partner about Git branches; the `AGENTS.md`
 `codex/` branch rule applies to upstream contributors, not partner launches.
 Make routine technical choices yourself and explain them afterwards in plain words.
 
+## Make technical choices and keep moving
+
+Do not turn setup into a technical questionnaire. Inspect the checkout and brief
+to choose tool versions, install commands, available ports, build settings,
+RPC defaults, SPA routing and deployment commands yourself. Do not ask the
+partner for chain IDs, RPC vendors, environment-variable names, Git branches
+or a choice between CLI/API/dashboard tools. Reuse supplied network names;
+only authoritative discovery can enable their trading lanes. Ask about a
+network only when its identity is genuinely ambiguous, in familiar terms.
+
+Read [network-and-rpc.md](references/network-and-rpc.md) when checking connectivity
+or when the partner has no RPC. Recommend the app's existing public endpoints
+first and validate what is actually testable. A missing private RPC account is
+not a reason to delay branding, preview or hosting.
+
+Continue through every authorized step you can complete. Fix routine tool,
+port and configuration failures yourself; recheck the affected step after a
+fix. If a failure repeats, inspect its cause instead of repeating the same
+command, opening more login windows or asking the partner to debug it. Keep
+independent work moving while a required choice or account action is pending.
+At a real blocker, explain its practical effect and the one needed action in
+plain language; put commands and diagnostics in `DEPLOYMENT.md`. Keep branding
+decisions and design review intact unless they were explicitly delegated.
+
 ## Tools and public configuration
 
 Use **Node.js 22.12 or newer**, compatible with `package.json`; CI currently uses
@@ -160,6 +194,8 @@ below instead. Do not clear an existing partner-owned ID or retain another app's
 Check shell/mode-file precedence without dumping the environment. Restart
 development and rebuild after changing build settings.
 API/WS endpoints currently come from source, not extra invented env variables.
+RPC endpoints already come from `src/config/constants.ts` and `viem/chains`;
+there is no required RPC input or supported `VITE_RPC_URL` setting in this version.
 Keep passwords, tokens, keys, seed phrases and onboarding signatures/proofs out
 of chat, code, commits, build output, notes and backups. Real environment files
 and provider login state stay local and ignored.
@@ -172,22 +208,26 @@ changes. Follow the
 [`perpetual-hub-theme` skill](../perpetual-hub-theme/SKILL.md) for palette generation,
 assets, contrast checks and local preview mechanics.
 
-1. **Ask for the logo first.** Reuse a logo already supplied; otherwise ask:
+1. **Collect the logo first.** Reuse supplied assets or inspect a supplied company
+   website's public branding through the theme skill. Reuse clearly authorized
+   logo assets; do not ask for an upload when the needed logo is already available.
+   If it is missing, ask:
    “Please attach your logo or give its local file path. You can also choose
    text-only branding.” Wait for the logo reply or an explicit skip/delegation
    before asking the appearance question. Keep this question focused on the
    logo; do not bundle colors, theme mode, hosting or wallet setup into it.
 2. **Ask about theme and colors next.** After the logo is supplied or skipped,
    inspect any supplied asset and ask only for missing, undelegated choices:
-   “Do you prefer a dark or light theme? What primary brand color or brand-guide
-   hex should I use, or should I suggest one from your logo?” If there is no
+   “Do you prefer a dark or light theme? Is there a brand color you'd like,
+   or should I suggest one from your logo?” Accept color names, supplied hex
+   values or natural-language preferences; do not require hex codes. If there is no
    logo, offer the default brand color instead of logo-derived colors. Label
    image-derived suggestions as approximate. Do not ask for individual tokens
    or repeat choices already supplied with the logo or brief. If the app name is
    still missing, include “What name should appear in the app?” in this same
    appearance question; reuse a supplied name or explicit naming delegation.
 3. If colors are omitted or delegated, take a suitable primary color from the
-   supplied logo, identifying it as approximate, or use `#6675f7`. Use the chosen
+   supplied logo/website, identifying it as approximate, or use `#6675f7`. Use the chosen
    mode, with dark as the default when the partner has no preference. The theme
    skill supplies the background defaults and derives the complete palette;
    retain recognizable green Long/profit and red Short/loss colors. Say which
@@ -257,28 +297,37 @@ supplied choices and existing site records without repeating questions.
 
 Respect a supplied hosting preference, including another provider or a request
 to host the build themselves. On updates, reuse the recorded provider, account,
-site and URL unless a migration is explicitly requested. For a new launch with
-no preference, say: “I'll use Netlify unless you prefer another provider.” This
-is an optional alternative, not another mandatory choice or approval. Do not
-silently switch away from a chosen host when login or deployment is blocked.
+site and URL unless a migration is explicitly requested. For a new launch without
+a preference, first inspect already-available hosting integrations or installed
+CLI sessions and reuse a suitable authorized account. Authentication alone does
+not authorize its use. If none is suitable, recommend Netlify subject to current
+terms; follow the shared reference's selection/fallback rules without a provider
+questionnaire. Do not silently switch a chosen host when deployment is blocked.
 
 Use the selected provider's CLI/API or an already-connected tool first for
 account/site inspection, name selection, creation, upload and checks. Reuse
 existing authorization without requiring another tool connection. The agent
-handles provider setup;
-the partner should not navigate dashboards, copy tokens or run commands.
+handles provider setup; the partner should not navigate dashboards, copy tokens
+or run commands.
 Only hand off necessary signup/login/MFA or an account/spending decision.
 Follow the selected reference's login handoff and settings procedure;
 routine settings are not another partner questionnaire.
 
-For Netlify, ask for the preferred address only if it is still missing and not delegated:
-“What address would you like, such as `your-brand.netlify.app`? It must end in
-`.netlify.app`; I can also use a generated name.” Explain that they choose the
-part before `.netlify.app`, not a domain to buy. Reuse an existing site's URL on
-updates unless a rename is requested. The `.netlify.app` suffix applies only
-to Netlify; use another provider's actual address rules for that provider.
+For a permanent launch, no hosting account yet is a guided signup step: prepare the selected provider's
+real login/signup page, explain that the creator signs in while you handle the
+site setup, and resume on observable success. Follow the reference's plan,
+ownership and access checks. Use a build handoff when chosen, signup is declined
+or access remains unavailable, not simply because signup has not happened yet.
+
+Collect only a missing, undelegated address choice using the selected provider's
+actual address rules. Reuse an existing site's URL unless a rename is requested.
 For self-hosting, prepare the checked production build and written instructions
 instead of creating a provider account/site or asking for a Netlify name.
+
+Local-preview requests do not authorize public hosting. A registration-free
+public preview is optional only when requested/authorized; follow the temporary
+preview procedure in the Netlify reference. Never replace a permanent launch
+with a temporary unclaimed URL or report one as the finished stable site.
 
 Read [references/hosting-and-activation.md](references/hosting-and-activation.md)
 before account/site setup and availability checking. It routes to the Netlify
@@ -317,6 +366,14 @@ and hosting instructions; report publication pending until the real site is
 verified. Keep publication pending when authorization or required checks are
 missing; local branding review needs no deployment.
 
+Before reporting completion, review the result against the brief: actual saved
+branding and preview outcome, original partner ID, requested versus active
+networks, stable site ownership/address, current plan, live desktop/mobile
+checks, separate REST/WebSocket evidence, optional wallet status and the next
+creator action. Fix discrepancies and repeat affected checks. Do not restart
+intake, request another general deployment approval or repeat passed checks
+without a change or unresolved failure.
+
 ## Record and hand off
 
 Read [references/deployment-record.md](references/deployment-record.md) for the
@@ -335,7 +392,7 @@ or failed submission does not undo a successful publication; record it separatel
 Use this fixed, short final handoff, replacing each value with actual results:
 
 ```text
-Website: <published — verified stable clickable address / publication pending — reason>.
+Website: <published — verified stable clickable address / publication pending — reason / temporary public preview — URL and verified expiry, permanent publication pending>.
 Trading activation: <verified active / waiting for the team>.
 Hosted connectivity: REST <result>; WebSocket <result>.
 Optional wallet pairing: <tested / deferred / blocked>.
@@ -348,11 +405,14 @@ or infer trading activation from publication, callback acceptance or wallet setu
 If the activation contact is missing, say **activation contact not provided**.
 Choose one immediate next action: a required account/access step if needed to
 continue agent deployment; upload the prepared build for a self-hosting handoff;
+use the real claim flow if the creator wants to retain a temporary preview;
 submit the published address through a real supplied portal/contact if automatic
 submission is pending; otherwise wait for activation. If an already published
 site has no activation route/contact, say no creator action is possible yet
 until the portal supplies activation details. Do not ask the
 creator to verify team-only facts or invent a destination.
+For a temporary-preview-only result, no action is needed now unless they want
+to retain it; state its expiry instead of asking them to activate or claim it.
 
 Put commands, diagnostics, pricing evidence, source/backup locations, the future
 update prompt and optional wallet setup instructions in `DEPLOYMENT.md`. Add one

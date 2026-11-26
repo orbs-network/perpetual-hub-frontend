@@ -15,20 +15,29 @@ finalization delegation; do not start another questionnaire or approval round.
 
 ## Start with the partner's choices
 
-Reuse choices, assets and delegation already supplied. For a new brand, first
+Reuse choices, assets and delegation already supplied. If the partner supplies
+their company website as a branding source, inspect its public logo, name and
+visual language first; see [branding-assets.md](references/branding-assets.md#branding-from-a-supplied-website).
+Reuse clearly authorized assets and identify inferred colors as approximate.
+For a new brand without an available logo, first
 ask for the logo file or local path, offering text-only branding. After the logo
 reply or explicit skip, inspect any supplied asset and ask a separate question about
-missing dark/light preference and primary brand color or brand-guide hex. A
+missing dark/light preference and primary brand color. Accept familiar color
+names, natural-language feedback and optional hex codes; do not require hex. A
 suitable approximate logo color can be suggested in that second question.
 Skip either question if its choices are already supplied or delegated; a launch
 must not repeat the intake when handing off to this skill. Obtain any missing
-app name before applying branding. Do not ask for individual theme tokens or
-insist on colors before showing a preview.
+app name in the appearance question, reusing a clearly identified company name
+from the supplied website or explicit naming delegation. Do not ask for individual
+theme tokens or insist on colors before showing a preview. Never invent or
+substitute the backend partner ID. Preserve existing fonts and component styles
+unless the requested customization calls for changing them.
 
 If choices are missing, use these defaults and explain them with the preview:
 
-- Primary color: exact supplied hex; otherwise a suitable color from the logo
-  (describe image-derived colors as approximate); otherwise `#6675f7`.
+- Primary color: exact supplied hex, or interpret a supplied color name/preference
+  as a suitable seed and explain that choice; otherwise a suitable color from the
+  supplied logo/website (describe inferred colors as approximate); otherwise `#6675f7`.
 - Appearance: requested dark or light; otherwise dark. Choose the page background
   yourself: `#07050d` for dark or `#f6f7f9` for light unless one was supplied.
 - Trading colors: default green Long/Buy/profit, red Short/Sell/loss and amber

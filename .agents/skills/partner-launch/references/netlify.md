@@ -6,6 +6,10 @@ Apply the shared ownership, cost, authorization and verification requirements in
 
 ## Keep authentication and setup inside the agent workflow
 
+This section is for an owned permanent site. For an explicitly requested
+registration-free preview, use only the temporary-preview section below and
+do not start signup merely to obtain its temporary link.
+
 After the branded preview is finished and accepted or finalization is delegated:
 
 1. Reuse the installed Netlify CLI, or prepare it in user space yourself. Read
@@ -25,6 +29,9 @@ After the branded preview is finished and accepted or finalization is delegated:
    Never request passwords/tokens in chat or a manually generated access token.
    If the CLI opens a browser directly, identify that window instead of inventing
    a URL. Do not add a dashboard tour or ask them to create the project.
+   If they have no account, guide signup in that same provider flow, subject to
+   the checked plan and spending limits. Missing prior signup is not a technical
+   setup task to send back to them or a reason to abandon deployment.
 4. Resume when the CLI/tool confirms authorization; do not require an extra
    “done” reply if success is already observable. Verify the resulting account
    and intended site before continuing. Ask an account question only for genuine
@@ -38,6 +45,10 @@ After the branded preview is finished and accepted or finalization is delegated:
    authentication, required account consent or a spending decision. If needed
    access/tools are unavailable, report that specific blocker rather than ask
    the partner to copy credentials, execute commands or navigate routine setup.
+   Before falling back, resolve routine CLI/configuration issues yourself and
+   use a sufficient connected tool or agent-operated provider UI if available.
+   Do not repeatedly retry a rejected login or duplicate project creation after
+   an ambiguous response; reconcile the actual account/site state first.
 
 On future updates, use the same permanent folder, account, site ID and stable URL.
 Reuse the saved authorized session when valid and repeat login only if required.
@@ -59,6 +70,10 @@ finalization in the [main skill](../SKILL.md), reusing a supplied choice or dele
 `your-brand` and the address ends in **`.netlify.app`**. This launch flow does not offer custom-domain
 purchases or DNS setup. See Netlify's current
 [project naming guidance](https://docs.netlify.com/manage/projects/customize-project-name-and-cover-image/).
+
+Ask only if the address is missing and undelegated: “What address would you like,
+such as `your-brand.netlify.app`? It must end in `.netlify.app`; I can also use a
+generated name.” Explain that they choose the first part, not a domain to buy.
 
 For a new site:
 
@@ -158,3 +173,45 @@ not just the deploy-specific draft URL. Dashboard env edits do not alter an
 already built upload; rebuild with the intended values.
 
 Continue with the [shared live checks and activation handoff](hosting-and-activation.md#verify-the-actual-website-and-activation-separately).
+
+## Explicit temporary public preview without signup
+
+Use only when a registration-free public preview was requested or separately
+authorized, after the local branded preview and required checks. A request for
+local/private preview does not authorize public upload; do not use anonymity
+to evade costs, account limits or eligibility. This is never the default route
+for a permanent launch or an update to an existing site.
+
+Recheck the installed CLI version/help, current [deploy flags](https://cli.netlify.com/commands/deploy/)
+and [anonymous deployment guide](https://docs.netlify.com/api-and-cli-guides/cli-guides/get-started-with-cli/#anonymous-deploys).
+As checked on 2026-11-26, the documented unauthenticated flow is:
+
+```sh
+netlify deploy --dir=dist --no-build --allow-anonymous
+```
+
+The current guide gives one hour to claim the project before unclaimed projects
+are removed. Reverify that rule at execution and show a provider-reported deadline,
+or one derived from its creation timestamp and verified claim window, with timezone.
+If neither is available, report the window and deadline as unverified rather
+than inventing an exact expiry. Do not promise a permanent URL.
+Inspect auth/site context first: `--allow-anonymous` applies when not logged
+in, so it does not make an authenticated upload anonymous. Do not log out an
+existing session, unlink a saved site or ignore an inherited target to force
+this path. Use an authorized owned draft where suitable, or keep the local
+preview if the intended temporary flow cannot be isolated safely.
+
+Return the actual preview URL only after checking it, label it temporary and
+keep permanent publication pending in the usual handoff. Check public artifacts
+before upload and disclose any badge/routing/connectivity limitations. A public
+temporary URL is not private. If the creator wants to retain it, use the real
+provider [claim flow](https://cli.netlify.com/commands/claim/) and let them sign in;
+verify account ownership, actual persistence and stable address afterward, then
+repeat applicable permanent-site and activation checks. Do not create a duplicate
+instead of reconciling the claimed site. Keep claim tokens/links out of source,
+backups and `DEPLOYMENT.md`; use the provider's direct personal claim handoff.
+Do not submit a temporary preview URL as the permanent activation callback.
+
+If the installed flow is unavailable or eligibility cannot be confirmed, keep
+the local preview/prepared build and explain that limitation. No public test
+deployment was performed while documenting this procedure.

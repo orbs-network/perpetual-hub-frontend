@@ -5,6 +5,11 @@ or a build they will host themselves. Apply the shared requirements in
 [hosting-and-activation.md](hosting-and-activation.md). Keep setup after the
 branded preview and reuse the same source folder, provider, site and URL on updates.
 
+For Cloudflare Pages or Vercel, use the specific
+[Cloudflare](cloudflare-pages.md) or [Vercel](vercel.md) procedure instead of
+guessing from generic static-host commands. Use this reference for other hosts
+and the checked build handoff when direct deployment is unavailable.
+
 ## Deploy to the chosen host when possible
 
 Use the selected provider's current official static-site/Vite documentation and
@@ -18,9 +23,20 @@ verifying the actual account and owned project before writes. Handle routine
 setup yourself. For missing/expired authorization, offer the provider's real
 login flow; the creator completes personal authentication and MFA. Do not ask
 for credentials in chat, require manually copied tokens, or treat network and
-permission errors as expired login. If direct deployment cannot be completed,
+permission errors as expired login. Guide account creation in the provider flow
+when needed and allowed; do not abandon deployment merely because no account
+exists yet. Resolve routine tool/configuration issues and use an available
+sufficient tool or agent-operated provider UI before declaring access unavailable.
+If direct deployment still cannot be completed,
 explain the specific limitation and prepare the build handoff below without
 silently switching to Netlify.
+
+When the chosen host has an official compatible browser upload flow, use it
+yourself with existing authorization before requiring manual upload. If creator
+takeover is unavoidable, supply the actual project/upload page and exact prepared
+folder/archive, then give one plain next action. Verify the returned URL when
+accessible; keep unverified results explicit. Do not invent a generic drag-and-drop
+capability or turn this into a development tutorial.
 
 Check the actual plan and current commercial-use terms, not just whether an
 account exists. For example, if Vercel is chosen, read its
@@ -51,7 +67,8 @@ The page loading alone does not verify trading access.
 
 ## Prepare a build the creator can host
 
-Use this path when self-hosting was requested or direct deployment is unavailable.
+Use this path when self-hosting was requested, signup was declined or direct
+deployment remains unavailable after the relevant authentication/access path.
 Do not create another hosting account/site or deploy elsewhere. Finish branding,
 preview and all four required source/build checks. Inspect the production build
 locally; no local result proves hosted connectivity.

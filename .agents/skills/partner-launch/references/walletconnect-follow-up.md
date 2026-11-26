@@ -6,6 +6,12 @@ relative to the app repository root. This is not part of branding or hosting set
 
 Use the shared [WalletConnect setup skill](https://github.com/orbs-network/agent-skills/blob/master/skills/walletconnect-setup/SKILL.md) for the common Reown workflow. Keep the Perps-specific behavior below. If the shared skill cannot be accessed, use this complete local procedure and report that it was unavailable.
 
+Read that guidance yourself; do not ask the creator to install or invoke it.
+If the GitHub page is inaccessible, try its official raw file once, then use
+this local fallback and note the source limitation in `DEPLOYMENT.md`. The
+launch's deferred-setup rule below takes precedence over any interactive setup
+steps: reading a shared skill does not make a missing ID a launch requirement.
+
 When no partner-owned project ID was supplied/configured, finish the launch and
 save concise written instructions in `DEPLOYMENT.md` and link them from the
 final handoff. Do not add a second immediate task list for the creator. Explain

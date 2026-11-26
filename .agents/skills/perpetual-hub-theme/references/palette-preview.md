@@ -8,7 +8,7 @@ an appearance preference, not a background token or a list of component colors.
 
 | Choice | Seed or behavior |
 | --- | --- |
-| Primary brand color | `accent`: supplied six-digit hex; otherwise a suitable approximate logo color; otherwise `#6675f7`. Prefer a supplied brand guide over sampling an image. |
+| Primary brand color | `accent`: supplied six-digit hex, or normalize a supplied color name/preference to a seed and explain the interpretation; otherwise a suitable approximate logo/website color; otherwise `#6675f7`. Prefer a supplied brand guide over sampling an image. |
 | Dark appearance | `background: '#07050d'` unless the partner supplied a background. |
 | Light appearance | `background: '#f6f7f9'` unless the partner supplied a background. |
 | No appearance preference | Dark for a new brand; preserve the current mode for an accent-only update. |
